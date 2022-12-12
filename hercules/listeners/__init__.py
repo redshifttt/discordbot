@@ -96,6 +96,6 @@ class BotListeners(commands.Cog):
         db_con = sqlite3.connect("data.db")
         db_cur = db_con.cursor()
 
-        db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?)", (guild_id, null, null, null, null))
+        db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?)", (guild_id, null, null, null, null,))
         db_con.commit()
 
