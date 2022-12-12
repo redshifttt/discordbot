@@ -53,7 +53,7 @@ async def on_ready():
 async def on_command_error(ctx, error):
     embed_content = {
         "title": "There was an error",
-        "colour": ff0000,
+        "colour": discord.Color.red(),
         "description": f"```{error}```"
     }
 
