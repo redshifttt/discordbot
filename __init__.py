@@ -61,8 +61,7 @@ async def on_ready():
 @bot.event
 async def on_command_error(ctx, error):
     embed_content = {
-        "title": "There was an error",
-        "colour": discord.Color.red(),
+        "title": ":x: There was an error",
         "description": f"```{error}```"
     }
 
