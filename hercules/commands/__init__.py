@@ -6,6 +6,7 @@ import requests
 import humanize
 import random
 import json
+import sqlite3
 
 class User(commands.Cog):
     def __init__(self, bot):
@@ -206,3 +207,38 @@ class User(commands.Cog):
             reply = "it's already christmas dummy!"
 
         await ctx.reply(reply)
+
+    @commands.command(name="settings")
+    async def settings(self, ctx, *args):
+        guild_id = ctx.guild.id
+        # temporary control variables
+        if not args:
+            # for now we shall return but this will print an embed with settings
+            return
+
+        if len(args) < 2 or len(args) > 2:
+            # this will error for now as well
+            await ctx.reply(":x: wrong number of arguments")
+
+        header, value = args
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+
+        res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
+
+        if res.fetchone() == None:
+            print(":x: For some reason this server is not in my database.")
+            return
+
+        # Unfortunately the below doesn't work. Time to open myself up to SQL
+        # injections - not like it matters though.
+        # res = db_cur.execute("UPDATE servers SET ? = ? WHERE guild_id=?", (header, value, guild_id,))
+        res = db_cur.execute(f"UPDATE servers SET {header} = {value} WHERE guild_id={guild_id}")
+        # res = True
+
+        if res:
+            await ctx.reply(f":white_check_mark: {header} set to `{value}`")
+
+        db_con.commit()
+        db_con.close()
