@@ -35,7 +35,7 @@ class BotListeners(commands.Cog):
         channel_pins = await channel.pins()
         pin = channel_pins[0]
         if not pin:
-            channel.send
+            print(f"no more pins in channel: {channel.name}")
 
         name = pin.author.name
         pfp = pin.author.avatar.url
