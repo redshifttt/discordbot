@@ -210,11 +210,28 @@ class User(commands.Cog):
 
     @commands.command(name="settings")
     async def settings(self, ctx, *args):
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
         guild_id = ctx.guild.id
-        # temporary control variables
+
         if not args:
-            # for now we shall return but this will print an embed with settings
-            return
+            guild_id, traffic_channel, pins_channel, verification_channel, logs_channel, _ \
+                = db_cur.execute("SELECT * FROM servers WHERE guild_id=?", (guild_id,)).fetchall()[0]
+
+            embed_content = {
+                "title": f"Hercules settings for {ctx.guild.name}",
+                "fields": [
+                    { "name": "traffic_channel", "value": traffic_channel, "inline": False },
+                    { "name": "pins_channel", "value": pins_channel, "inline": False },
+                    { "name": "verification_channel", "value": verification_channel, "inline": False }
+                ]
+            }
+
+            embed = discord.Embed().from_dict(embed_content)
+            embed.set_thumbnail(url=ctx.guild.icon.url)
+
+            await ctx.reply(embed=embed)
+        return
 
         if len(args) < 2 or len(args) > 2:
             # this will error for now as well
@@ -222,9 +239,6 @@ class User(commands.Cog):
             return
 
         header, value = args
-
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
 
         res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
 
