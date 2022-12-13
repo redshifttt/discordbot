@@ -15,48 +15,41 @@ class BotListeners(commands.Cog):
         db_con = sqlite3.connect("data.db")
         db_cur = db_con.cursor()
 
-        has_pins_function = db_cur.execute("SELECT pins_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()
+        has_pins_setting = db_cur.execute("SELECT pins_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
 
-        if has_pins_function[0] == "null":
+        if has_pins_setting == "null":
             return
 
         pins_channel = db_cur.execute("SELECT pins_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
         pins_channel = self.bot.get_channel(int(pins_channel))
 
         available_webhooks = await pins_channel.webhooks()
-        hercules_pinhook = None
 
-        for hook in available_webhooks:
-            if "Hercules Pin Webhook" in hook.name:
-                webhook = hook.url
-            else:
-                webhook = await pins_channel.create_webhook(name="Hercules Pin Webhook").url
+        hook_exists = discord.utils.find(lambda h: h.name == "Hercules Pin Webhook", available_webhooks)
 
-        if not last_pin:
-            return
+        if hook_exists:
+            webhook = hook_exists
+        else:
+            webhook = await pins_channel.create_webhook(name="Hercules Pin Webhook")
 
         channel_pins = await channel.pins()
-        if not channel_pins:
-            channel.send(":x: No pins in this channel.")
-            return
-
         pin = channel_pins[0]
+        if not pin:
+            channel.send
 
         name = pin.author.name
         pfp = pin.author.avatar.url
         content = pin.content
 
-        attachments = None
+        attachments = []
         if pin.attachments:
             attachments = [att.url for att in pin.attachments]
             content = f"{content} {' '.join(attachments)}"
 
-        # TODO: just do the await webhook.send
-        async with aiohttp.ClientSession() as session:
-            pinhook = discord.Webhook.from_url(webhook, session=session) # TODO: modularise
-            await pinhook.send(content=content, username=name, avatar_url=pfp)
+        await webhook.send(content=content, username=name, avatar_url=pfp)
 
         await pin.unpin()
+        db_con.close()
 
     @commands.Cog.listener(name='on_member_join')
     async def member_join(self, member):
@@ -90,6 +83,7 @@ class BotListeners(commands.Cog):
         await traffic_channel.send(f":inbox_tray: **{member}** has joined the server!")
 
         await verification_channel.send(verification_message)
+        db_con.close()
 
     @commands.Cog.listener(name='on_member_remove')
     async def member_leave(self, member):
@@ -106,7 +100,7 @@ class BotListeners(commands.Cog):
             return
 
         await traffic_channel.send(f":outbox_tray: **{member}** has left the server.")
-        await update_status_message()
+        db_con.close()
 
     @commands.Cog.listener(name='on_message')
     async def message_link_resolve(self, message):
