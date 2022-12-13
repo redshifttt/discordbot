@@ -219,6 +219,7 @@ class User(commands.Cog):
         if len(args) < 2 or len(args) > 2:
             # this will error for now as well
             await ctx.reply(":x: wrong number of arguments")
+            return
 
         header, value = args
 
@@ -228,7 +229,7 @@ class User(commands.Cog):
         res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
 
         if res.fetchone() == None:
-            print(":x: For some reason this server is not in my database.")
+            await ctx.reply(":x: For some reason this server is not in my database.")
             return
 
         # Unfortunately the below doesn't work. Time to open myself up to SQL
