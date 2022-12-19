@@ -42,7 +42,11 @@ async def on_ready():
                 traffic_channel,
                 pins_channel,
                 verification_channel,
-                logs_channel
+                general_channel,
+                logs_channel,
+                join_message,
+                leave_message,
+                verification_message
             )
         """)
         db_con.commit()
@@ -53,7 +57,8 @@ async def on_ready():
         res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (g,))
         if res.fetchone() == None:
             print(f"Initialising {g} in DB")
-            db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?)", (g, "null", "null", "null", "null",))
+            db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (g, "null", "null", "null", "null", "null", "null", "null", "null",))
             db_con.commit()
 
     db_con.close()
