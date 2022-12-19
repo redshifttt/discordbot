@@ -51,14 +51,21 @@ async def on_ready():
         """)
         db_con.commit()
 
-    guilds_id = [g.id for g in bot.guilds]
+    guilds = bot.guilds
 
-    for g in guilds_id:
-        res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (g,))
+    for guild in guilds:
+        guild_id = guild.id
+        res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
         if res.fetchone() == None:
-            print(f"Initialising {g} in DB")
+            print(f"Initialising {guild_id} in DB")
             db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (g, "null", "null", "null", "null", "null", "null", "null", "null",))
+                            (guild_id, "null", "null", "null", "null", "null", "null", "null", "null",))
+            db_con.commit()
+
+        general_channel_in_server = discord.utils.find(lambda c: c.name == "general", guild.channels)
+
+        if general_channel_in_server:
+            res = db_cur.execute(f"UPDATE servers SET general_channel = {general_channel_in_server.id} WHERE guild_id={guild_id}")
             db_con.commit()
 
     db_con.close()
