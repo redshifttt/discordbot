@@ -59,30 +59,23 @@ class BotListeners(commands.Cog):
         db_cur = db_con.cursor()
 
         traffic_channel = db_cur.execute("SELECT traffic_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        verification_channel = db_cur.execute("SELECT verification_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+        join_message = db_cur.execute("SELECT join_message FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
 
+        verification_channel = db_cur.execute("SELECT verification_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+        verification_message = db_cur.execute("SELECT verification_message FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+
+        # Finding the channels
         if not traffic_channel == "null":
             traffic_channel = self.bot.get_channel(int(traffic_channel))
-        else:
-            # TODO: maybe have a setting where you can set the general channel
-            # then have a message be sent there as an error in the settings.
-            # Goes for verification_channel as well.
-            return
+
+            if not join_message == "null":
+                await traffic_channel.send(f":inbox_tray: {member.mention} {join_message}")
 
         if not verification_channel == "null":
-            verification_channel = self.bot.get_channel(int(verification_channel))
-        else:
-            return
+            if not verification_message == "null":
+                verification_channel = self.bot.get_channel(int(verification_channel))
+                await verification_channel.send(f"{member.mention} {verification_message}")
 
-        # TODO: Make a setting for the message in the future. An idea is to let
-        # the user specify something like {user_member} when setting the value for
-        # verification_message; you can check if the string has that in it
-        # and just replace it with member.mention or something. The same goes
-        # for the message sent to traffic_channel,
-        verification_message = f"hey {member.mention}, say something then ping someone who's online to get in. you'd be surprised how hard this is for some people."
-        await traffic_channel.send(f":inbox_tray: **{member}** has joined the server!")
-
-        await verification_channel.send(verification_message)
         db_con.close()
 
     @commands.Cog.listener(name='on_member_remove')
@@ -93,13 +86,13 @@ class BotListeners(commands.Cog):
         db_cur = db_con.cursor()
 
         traffic_channel = db_cur.execute("SELECT traffic_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        if not traffic_channel == "null":
-            traffic_channel = self.bot.get_channel(int(traffic_channel))
-        else:
-            # Same idea as above with the general channel.
-            return
+        leave_message = db_cur.execute("SELECT leave_message FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
 
-        await traffic_channel.send(f":outbox_tray: **{member}** has left the server.")
+        if not traffic_channel == "null":
+            if not leave_message == "null":
+                traffic_channel = self.bot.get_channel(int(traffic_channel))
+                await traffic_channel.send(f":outbox_tray: {member.mention} {leave_message}")
+
         db_con.close()
 
     @commands.Cog.listener(name='on_message')
@@ -145,6 +138,6 @@ class BotListeners(commands.Cog):
         db_con = sqlite3.connect("data.db")
         db_cur = db_con.cursor()
 
-        db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?)", (guild_id, null, null, null, null,))
+        db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (guild_id, null, null, null, null, null, null, null, null,))
         db_con.commit()
 
