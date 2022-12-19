@@ -215,15 +215,21 @@ class User(commands.Cog):
         guild_id = ctx.guild.id
 
         if not args:
-            guild_id, traffic_channel, pins_channel, verification_channel, logs_channel, _ \
+            guild_id, traffic_channel, pins_channel, verification_channel, general_channel, logs_channel, join_message, leave_message, verification_message \
                 = db_cur.execute("SELECT * FROM servers WHERE guild_id=?", (guild_id,)).fetchall()[0]
 
             embed_content = {
                 "title": f"Hercules settings for {ctx.guild.name}",
                 "fields": [
+                    { "name": "guild_id", "value": guild_id, "inline": False },
                     { "name": "traffic_channel", "value": traffic_channel, "inline": False },
                     { "name": "pins_channel", "value": pins_channel, "inline": False },
-                    { "name": "verification_channel", "value": verification_channel, "inline": False }
+                    { "name": "verification_channel", "value": verification_channel, "inline": False },
+                    { "name": "general_channel", "value": general_channel, "inline": False },
+                    { "name": "logs_channel", "value": logs_channel, "inline": False },
+                    { "name": "join_message", "value": join_message, "inline": False },
+                    { "name": "leave_message", "value": leave_message, "inline": False },
+                    { "name": "verification_message", "value": verification_message, "inline": False }
                 ]
             }
 
@@ -231,7 +237,7 @@ class User(commands.Cog):
             embed.set_thumbnail(url=ctx.guild.icon.url)
 
             await ctx.reply(embed=embed)
-        return
+            return
 
         if len(args) < 2 or len(args) > 2:
             # this will error for now as well
@@ -242,14 +248,10 @@ class User(commands.Cog):
 
         res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
 
-        if res.fetchone() == None:
-            await ctx.reply(":x: For some reason this server is not in my database.")
-            return
-
         # Unfortunately the below doesn't work. Time to open myself up to SQL
         # injections - not like it matters though.
         # res = db_cur.execute("UPDATE servers SET ? = ? WHERE guild_id=?", (header, value, guild_id,))
-        res = db_cur.execute(f"UPDATE servers SET {header} = {value} WHERE guild_id={guild_id}")
+        res = db_cur.execute(f"UPDATE servers SET {header} = '{value}' WHERE guild_id={guild_id}")
         # res = True
 
         if res:
