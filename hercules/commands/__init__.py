@@ -196,7 +196,7 @@ class User(commands.Cog):
         fortune = args.split("or")
         fortune = [f.strip() for f in fortune]
 
-        await ctx.reply(choice)
+        await ctx.reply(fortune)
 
     @commands.command(name="christmas")
     async def christmas(self, ctx):
