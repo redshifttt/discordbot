@@ -195,6 +195,7 @@ class User(commands.Cog):
 
         fortune = args.split("or")
         fortune = [f.strip() for f in fortune]
+        fortune = random.choice(fortune)
 
         await ctx.reply(fortune)
 
