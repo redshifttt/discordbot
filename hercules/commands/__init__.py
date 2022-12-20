@@ -149,7 +149,7 @@ class User(commands.Cog):
 
     @commands.command(name="search")
     async def search(self, ctx, *args):
-        async with bot.get_channel(ctx.channel.id).typing():
+        async with self.bot.get_channel(ctx.channel.id).typing():
             # Turn command arguments (tuple) into a list
             search_term = list(args)
             url = f"https://search.privatevoid.net/search?q={search_term}&format=json"
