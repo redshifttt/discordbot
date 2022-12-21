@@ -8,14 +8,6 @@ from discord.ext import commands
 import hercules.commands
 import hercules.listeners
 
-class BotConfig(object):
-    def __init__(self, d):
-        self.__dict__ = d
-
-with open("config.json", "r") as config:
-    config = json.load(config)
-    conf = BotConfig(config)
-
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=".", intents=intents)
 
@@ -81,9 +73,12 @@ async def on_command_error(ctx, error):
 
     await ctx.reply(embed=embed)
 
+with open("config.json", "r") as config:
+    config = json.load(config)
+
 real_bot = int(os.getenv("REAL"))
 
 if not real_bot == 0:
-    bot.run(conf.dev_token)
+    bot.run(config["dev_token"])
 
-bot.run(conf.token)
+bot.run(config["token"])
