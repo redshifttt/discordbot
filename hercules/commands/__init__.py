@@ -240,23 +240,29 @@ class User(commands.Cog):
             await ctx.reply(embed=embed)
             return
 
-        if len(args) < 2 or len(args) > 2:
-            # this will error for now as well
+        if not len(args) == 2:
             await ctx.reply(":x: wrong number of arguments")
             return
 
         header, value = args
+
+        if header == "guild_id":
+            await ctx.reply(f":x: Cannot change the current server ID")
+            return
 
         res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
 
         # Unfortunately the below doesn't work. Time to open myself up to SQL
         # injections - not like it matters though.
         # res = db_cur.execute("UPDATE servers SET ? = ? WHERE guild_id=?", (header, value, guild_id,))
+
+        # This is what seems to be the best you can do when it comes to dynamic settings of values
         res = db_cur.execute(f"UPDATE servers SET {header} = '{value}' WHERE guild_id={guild_id}")
-        # res = True
 
-        if res:
-            await ctx.reply(f":white_check_mark: {header} set to `{value}`")
+        if not res:
+            await ctx.reply(f":x: There was an error setting that value.")
+            return
 
+        await ctx.reply(f":white_check_mark: {header} set to `{value}`")
         db_con.commit()
         db_con.close()
