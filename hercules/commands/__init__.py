@@ -222,15 +222,15 @@ class User(commands.Cog):
             embed_content = {
                 "title": f"Hercules settings for {ctx.guild.name}",
                 "fields": [
-                    { "name": "guild_id", "value": guild_id, "inline": False },
-                    { "name": "traffic_channel", "value": traffic_channel, "inline": False },
-                    { "name": "pins_channel", "value": pins_channel, "inline": False },
-                    { "name": "verification_channel", "value": verification_channel, "inline": False },
-                    { "name": "general_channel", "value": general_channel, "inline": False },
-                    { "name": "logs_channel", "value": logs_channel, "inline": False },
-                    { "name": "join_message", "value": join_message, "inline": False },
-                    { "name": "leave_message", "value": leave_message, "inline": False },
-                    { "name": "verification_message", "value": verification_message, "inline": False }
+                    { "name": "Server ID", "value": guild_id, "inline": False },
+                    { "name": "Traffic Channel", "value": traffic_channel, "inline": False },
+                    { "name": "Pins Channel", "value": pins_channel, "inline": False },
+                    { "name": "Verification Channel", "value": verification_channel, "inline": False },
+                    { "name": "General Channel", "value": general_channel, "inline": False },
+                    { "name": "Logs Channel", "value": logs_channel, "inline": False },
+                    { "name": "Join Message", "value": join_message, "inline": False },
+                    { "name": "Leave Message", "value": leave_message, "inline": False },
+                    { "name": "Verification Message", "value": verification_message, "inline": False }
                 ]
             }
 
