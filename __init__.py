@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 
 import hercules.commands
+from hercules.commands import ask
 import hercules.listeners
 
 intents = discord.Intents.all()
@@ -17,7 +18,9 @@ os.environ['TZ'] = 'UTC'
 async def on_ready():
     print(f"Logged in as {bot.user}")
 
-    await bot.add_cog(hercules.commands.User(bot))
+    await bot.add_cog(hercules.commands.ask.Ask(bot))
+
+    await bot.add_cog(hercules.commands.User(bot)) # Eeventually remove this and replace with all the commands
     await bot.add_cog(hercules.listeners.BotListeners(bot))
 
     production_bot_id = 1001084456712544307

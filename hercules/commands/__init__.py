@@ -187,17 +187,6 @@ class User(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    @commands.command(name="ask")
-    async def ask(self, ctx, *args):
-        args = " ".join(args)
-        if not "or" in args:
-            return
-
-        fortune = args.split("or")
-        fortune = [f.strip() for f in fortune]
-        fortune = random.choice(fortune)
-
-        await ctx.reply(fortune)
 
     @commands.command(name="christmas")
     async def christmas(self, ctx):
