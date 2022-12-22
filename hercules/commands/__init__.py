@@ -93,19 +93,6 @@ class User(commands.Cog):
             )
             await ctx.reply(embed=embed)
 
-    @commands.command(name="avatar")
-    async def avatar(self, ctx):
-        if not ctx.message.mentions:
-            user = ctx.author
-        else:
-            user = ctx.message.mentions[0]
-
-        embed = discord.Embed(title=f"{user.name}'s profile picture")
-        embed.set_image(url=user.avatar.url)
-
-        await ctx.reply(embed=embed)
-
-
     @commands.command(name="christmas")
     async def christmas(self, ctx):
         christmas = humanize.precisedelta(dt.datetime(2022, 12, 25, 0, 0, 0, 0) - dt.datetime.today(), minimum_unit="hours", format="%.0f")
