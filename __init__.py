@@ -26,7 +26,6 @@ async def on_ready():
     await bot.add_cog(hercules.commands.settings.Settings(bot))
     await bot.add_cog(hercules.commands.christmas.Christmas(bot))
 
-    await bot.add_cog(hercules.commands.User(bot)) # Eeventually remove this and replace with all the commands
     await bot.add_cog(hercules.listeners.BotListeners(bot))
 
     production_bot_id = 1001084456712544307
