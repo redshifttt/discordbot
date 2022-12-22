@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 
 import hercules.commands
-from hercules.commands import ask, serverinfo, avatar, userinfo
+from hercules.commands import ask, serverinfo, avatar, userinfo, search
 import hercules.listeners
 
 intents = discord.Intents.all()
@@ -22,6 +22,7 @@ async def on_ready():
     await bot.add_cog(hercules.commands.serverinfo.ServerInfo(bot))
     await bot.add_cog(hercules.commands.avatar.Avatar(bot))
     await bot.add_cog(hercules.commands.userinfo.UserInfo(bot))
+    await bot.add_cog(hercules.commands.search.Search(bot))
 
     await bot.add_cog(hercules.commands.User(bot)) # Eeventually remove this and replace with all the commands
     await bot.add_cog(hercules.listeners.BotListeners(bot))
