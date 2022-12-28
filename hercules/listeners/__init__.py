@@ -4,7 +4,7 @@ import aiohttp
 import datetime as dt
 import sqlite3
 
-class BotListeners(commands.Cog):
+class GenericListeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

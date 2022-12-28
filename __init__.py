@@ -25,7 +25,8 @@ async def on_ready():
     await bot.add_cog(hercules.commands.search.Search(bot))
     await bot.add_cog(hercules.commands.settings.Settings(bot))
 
-    await bot.add_cog(hercules.listeners.BotListeners(bot))
+    await bot.add_cog(hercules.listeners.GenericListeners(bot))
+    # await bot.add_cog(hercules.listeners.BotListeners(bot)) server logs
 
     production_bot_id = 1001084456712544307
 
