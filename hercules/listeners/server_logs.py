@@ -23,7 +23,12 @@ class ServerEventLogging(commands.Cog):
 
             member_tag = f"{member.name}#{member.discriminator}"
             member_created = member.created_at.strftime("%A, %d %b %Y at %l:%M%p")
-            member_pfp = member.avatar.url
+
+            if member.default_avatar:
+                member_pfp = member.default_avatar.url
+            else:
+                member_pfp = member.avatar.url
+
             member_mutual_guilds = "\n".join([f"- {guild.name}" for guild in member.mutual_guilds])
             member_mutual_guilds_count = len(member.mutual_guilds)
 
