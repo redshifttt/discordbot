@@ -9,13 +9,9 @@ class ServerEventLogging(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener(name="on_message")
-    async def server_log_member_join(self, message):
-        guild_id = message.guild.id
-        member = message.author
-
-        if not message.author.id == 356830440629207040:
-            return
+    @commands.Cog.listener(name="on_member_join")
+    async def server_log_member_join(self, member):
+        guild_id = member.guild.id
 
         db_con = sqlite3.connect("data.db")
         db_cur = db_con.cursor()
