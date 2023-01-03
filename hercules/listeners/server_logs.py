@@ -22,7 +22,7 @@ class ServerEventLogging(commands.Cog):
             logs_channel = self.bot.get_channel(int(logs_channel))
 
             member_tag = f"{member.name}#{member.discriminator}"
-            member_created = member.created_at.strftime("%A, %d %b %Y at %l:%M%p")
+            member_created = member.created_at.strftime("%A, %e %b %Y at %l:%M%p")
 
             if member.default_avatar:
                 member_pfp = member.default_avatar.url
