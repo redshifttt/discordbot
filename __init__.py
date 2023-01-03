@@ -8,6 +8,7 @@ from discord.ext import commands
 import hercules.commands
 from hercules.commands import ask, serverinfo, avatar, userinfo, search, settings
 import hercules.listeners
+from hercules.listeners import server_logs
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=".", intents=intents)
@@ -26,7 +27,7 @@ async def on_ready():
     await bot.add_cog(hercules.commands.settings.Settings(bot))
 
     await bot.add_cog(hercules.listeners.GenericListeners(bot))
-    # await bot.add_cog(hercules.listeners.BotListeners(bot)) server logs
+    await bot.add_cog(hercules.listeners.server_logs.ServerEventLogging(bot))
 
     production_bot_id = 1001084456712544307
 
