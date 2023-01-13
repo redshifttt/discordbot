@@ -49,9 +49,9 @@ class ServerEventLogging(commands.Cog):
 
             await logs_channel.send(embed=embed)
 
-    @commands.Cog.listener(name="on_member_remove") ## CHANGE THIS
-    async def server_log_member_leave(self, member): ## CHANGE THIS
-        guild_id = member.guild.id ## CHANGE MESSAGE TO MEMBER
+    @commands.Cog.listener(name="on_member_remove")
+    async def server_log_member_leave(self, member):
+        guild_id = member.guild.id
 
         db_con = sqlite3.connect("data.db")
         db_cur = db_con.cursor()
@@ -81,6 +81,45 @@ class ServerEventLogging(commands.Cog):
 
             embed = discord.Embed().from_dict(embed_content)
             embed.colour = discord.Color.red()
+            embed.set_thumbnail(url=member_pfp)
+            embed.set_footer(text=f"User ID: {member_id}")
+
+            await logs_channel.send(embed=embed)
+
+    @commands.Cog.listener(name="on_member_update")
+    async def server_log_member_update(self, before, after):
+        member = before
+        guild_id = member.guild.id
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+
+        logs_channel = db_cur.execute("SELECT logs_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+
+        db_con.close()
+
+        if not logs_channel == "null":
+            logs_channel = self.bot.get_channel(int(logs_channel))
+
+            member_tag = f"{member.name}#{member.discriminator}"
+            member_id = member.id
+
+            if not member.avatar:
+                member_pfp = member.default_avatar.url
+            else:
+                member_pfp = member.avatar.url
+
+            # Nickname changes
+            if not before.nick == after.nick:
+                embed_content = {
+                    "title": f":writing_hand: {member_tag}'s nickname was changed",
+                    "fields": [
+                        {"name": "Old nickname", "value": before.nick, "inline": True},
+                        {"name": "New nickname", "value": after.nick, "inline": True}
+                    ]
+                }
+
+            embed = discord.Embed().from_dict(embed_content)
             embed.set_thumbnail(url=member_pfp)
             embed.set_footer(text=f"User ID: {member_id}")
 
