@@ -192,3 +192,42 @@ class ServerEventLogging(commands.Cog):
             embed.set_footer(text=f"User ID: {member_id}")
 
             await logs_channel.send(embed=embed)
+
+    @commands.Cog.listener(name="on_message_delete")
+    async def server_log_member_join(self, message):
+        member = message.author
+        channel = message.channel
+        guild_id = message.guild.id
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+
+        logs_channel = db_cur.execute("SELECT logs_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+
+        db_con.close()
+
+        if not logs_channel == "null":
+            logs_channel = self.bot.get_channel(int(logs_channel))
+
+            member_tag = f"{member.name}#{member.discriminator}"
+            member_id = member.id
+            member_joined_at = member.joined_at.strftime("%A, %e %b %Y at %l:%M%p")
+
+            if not member.avatar:
+                member_pfp = member.default_avatar.url
+            else:
+                member_pfp = member.avatar.url
+
+            embed_content = {
+                "title": f":thumbsdown: {member_tag}'s message got deleted in #{channel.name}",
+                "fields": [
+                    {"name": "Deleted message", "value": message.clean_content, "inline": False},
+                    {"name": "Channel", "value": channel.mention, "inline": False},
+                ]
+            }
+
+            embed = discord.Embed().from_dict(embed_content)
+            embed.set_thumbnail(url=member_pfp)
+            embed.set_footer(text=f"User ID: {member_id}")
+
+            await logs_channel.send(embed=embed)
