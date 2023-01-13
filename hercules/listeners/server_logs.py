@@ -119,8 +119,40 @@ class ServerEventLogging(commands.Cog):
                     ]
                 }
 
-            embed = discord.Embed().from_dict(embed_content)
-            embed.set_thumbnail(url=member_pfp)
-            embed.set_footer(text=f"User ID: {member_id}")
+                embed = discord.Embed().from_dict(embed_content)
+                embed.set_thumbnail(url=member_pfp)
+                embed.set_footer(text=f"User ID: {member_id}")
 
-            await logs_channel.send(embed=embed)
+                await logs_channel.send(embed=embed)
+
+            if len(before.roles) > len(after.roles): # roles must have been removed
+                removed_roles = list(set(before.roles).difference(after.roles))
+                removed_roles = ", ".join([role.name for role in removed_roles])
+                embed_content = {
+                    "title": f":scroll: {member_tag} had roles removed",
+                    "fields": [
+                        {"name": "Removed roles", "value": removed_roles, "inline": True},
+                    ]
+                }
+
+                embed = discord.Embed().from_dict(embed_content)
+                embed.set_thumbnail(url=member_pfp)
+                embed.set_footer(text=f"User ID: {member_id}")
+
+                await logs_channel.send(embed=embed)
+            else:
+                added_roles = list(set(after.roles).difference(before.roles))
+                added_roles = ", ".join([role.name for role in added_roles])
+                embed_content = {
+                    "title": f":scroll: {member_tag} had roles added",
+                    "fields": [
+                        {"name": "Added roles", "value": added_roles, "inline": True},
+                    ]
+                }
+
+                embed = discord.Embed().from_dict(embed_content)
+                embed.set_thumbnail(url=member_pfp)
+                embed.set_footer(text=f"User ID: {member_id}")
+
+                await logs_channel.send(embed=embed)
+
