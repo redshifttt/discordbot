@@ -156,3 +156,39 @@ class ServerEventLogging(commands.Cog):
 
                 await logs_channel.send(embed=embed)
 
+    @commands.Cog.listener(name="on_member_ban")
+    async def server_log_member_join(self, guild, user):
+        guild_id = guild.id
+        member = user
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+
+        logs_channel = db_cur.execute("SELECT logs_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+
+        db_con.close()
+
+        if not logs_channel == "null":
+            logs_channel = self.bot.get_channel(int(logs_channel))
+
+            member_tag = f"{member.name}#{member.discriminator}"
+            member_id = member.id
+            member_joined_at = member.joined_at.strftime("%A, %e %b %Y at %l:%M%p")
+
+            if not member.avatar:
+                member_pfp = member.default_avatar.url
+            else:
+                member_pfp = member.avatar.url
+
+            embed_content = {
+                "title": f":hammer: {member_tag} has been banned!",
+                "fields": [
+                    {"name": "Joined the server on", "value": member_joined_at, "inline": True},
+                ]
+            }
+
+            embed = discord.Embed().from_dict(embed_content)
+            embed.set_thumbnail(url=member_pfp)
+            embed.set_footer(text=f"User ID: {member_id}")
+
+            await logs_channel.send(embed=embed)
