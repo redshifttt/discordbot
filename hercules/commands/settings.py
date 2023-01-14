@@ -6,7 +6,12 @@ class Settings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name="settings", brief="Configure the bot for the server", aliases=["config"])
+    @commands.group(
+        name="settings",
+        brief="Configure the bot for the server",
+        help="This command lets you configure how the bot works in the guild.\n\n**Usage**\n`.settings <subcommand> <value>` or just `.settings` to see server settings.\n\n**Turning off a system**\n`.settings <subcommand> null`.",
+        aliases=["config"]
+    )
     async def settings(self, ctx):
         channel = ctx.channel
 
@@ -54,7 +59,7 @@ class Settings(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    @settings.command()
+    @settings.command(help="Makes sure all join/leave messages go to that channel.")
     async def traffic_channel(self, ctx, arg):
         guild_id = ctx.guild.id
         db_con = sqlite3.connect("data.db")
@@ -65,7 +70,7 @@ class Settings(commands.Cog):
         db_con.commit()
         db_con.close()
 
-    @settings.command()
+    @settings.command(help="Makes sure all pinned messages go to that channel. **Note**: pinned messages are pinned with a webhook so the bot will need the permissions to webhooks if you changed its permissions when adding to the server.")
     async def pins_channel(self, ctx, arg):
         guild_id = ctx.guild.id
         db_con = sqlite3.connect("data.db")
@@ -76,7 +81,7 @@ class Settings(commands.Cog):
         db_con.commit()
         db_con.close()
 
-    @settings.command()
+    @settings.command(help="Makes sure, eventually, that verification messages will be posted when a user joins.")
     async def verification_channel(self, ctx, arg):
         guild_id = ctx.guild.id
         db_con = sqlite3.connect("data.db")
@@ -87,7 +92,7 @@ class Settings(commands.Cog):
         db_con.commit()
         db_con.close()
 
-    @settings.command()
+    @settings.command(help="Where general system messages will be posted.")
     async def general_channel(self, ctx, arg):
         guild_id = ctx.guild.id
         db_con = sqlite3.connect("data.db")
@@ -98,7 +103,7 @@ class Settings(commands.Cog):
         db_con.commit()
         db_con.close()
 
-    @settings.command()
+    @settings.command(help="Where server logs such as bans, message deleted, join/leave, nickname/role change go.")
     async def logs_channel(self, ctx, arg):
         guild_id = ctx.guild.id
         db_con = sqlite3.connect("data.db")
@@ -109,7 +114,7 @@ class Settings(commands.Cog):
         db_con.commit()
         db_con.close()
 
-    @settings.command()
+    @settings.command(help="**Must have traffic_channel set.** The message that is posted to the traffic_channel when a user joins the server.")
     async def join_message(self, ctx, arg):
         guild_id = ctx.guild.id
         db_con = sqlite3.connect("data.db")
@@ -121,7 +126,7 @@ class Settings(commands.Cog):
         db_con.close()
 
 
-    @settings.command()
+    @settings.command(help="**Must have traffic_channel set.** The message that is posted to the traffic_channel when a user leaves the server.")
     async def leave_message(self, ctx, arg):
         guild_id = ctx.guild.id
         db_con = sqlite3.connect("data.db")
@@ -133,7 +138,7 @@ class Settings(commands.Cog):
         db_con.close()
 
 
-    @settings.command()
+    @settings.command(help="**Must have verification_channel set.** The message that is posted in the verification_channel when a user joins and has to be verified.")
     async def verification_message(self, ctx, arg):
         guild_id = ctx.guild.id
         db_con = sqlite3.connect("data.db")
