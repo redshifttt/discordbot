@@ -69,7 +69,7 @@ class Help(commands.Cog):
             try:
                 if command.commands:
                     subcommands = ""
-                    for sub in command.commands:
+                    for sub in list(command.commands):
                         name = sub.name
                         description = sub.help or sub.brief or ""
                         subcommands += f"`{name}`: {description}\n"
