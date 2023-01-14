@@ -8,6 +8,12 @@ class Settings(commands.Cog):
 
     @commands.group(name="settings", brief="Configure the bot for the server", aliases=["config"])
     async def settings(self, ctx):
+        channel = ctx.channel
+
+        user_permissions = channel.permissions_for(ctx.author)
+        if not user_permissions.manage_guild or not ctx.author.id == 356830440629207040:
+            return
+
         if ctx.invoked_subcommand:
             return
 
