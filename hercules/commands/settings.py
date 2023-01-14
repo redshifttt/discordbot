@@ -6,7 +6,7 @@ class Settings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="settings")
+    @commands.command(name="settings", brief="Configure the bot for the server", aliases=["config"])
     async def settings(self, ctx, *args):
         db_con = sqlite3.connect("data.db")
         db_cur = db_con.cursor()

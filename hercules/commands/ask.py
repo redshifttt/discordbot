@@ -6,7 +6,7 @@ class Ask(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="ask")
+    @commands.command(name="ask", brief="Ask the bot to pick between 2 values")
     async def ask(self, ctx, *args):
         args = " ".join(args)
         if not "or" in args:

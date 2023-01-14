@@ -6,12 +6,12 @@ import discord
 from discord.ext import commands
 
 import hercules.commands
-from hercules.commands import ask, serverinfo, avatar, userinfo, search, settings
+from hercules.commands import ask, serverinfo, avatar, userinfo, search, settings, help
 import hercules.listeners
 from hercules.listeners import server_logs
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=".", intents=intents)
+bot = commands.Bot(command_prefix=".", intents=intents, help_command=None)
 
 os.environ['TZ'] = 'UTC'
 
@@ -25,6 +25,7 @@ async def on_ready():
     await bot.add_cog(hercules.commands.userinfo.UserInfo(bot))
     await bot.add_cog(hercules.commands.search.Search(bot))
     await bot.add_cog(hercules.commands.settings.Settings(bot))
+    await bot.add_cog(hercules.commands.help.Help(bot))
 
     await bot.add_cog(hercules.listeners.GenericListeners(bot))
     await bot.add_cog(hercules.listeners.server_logs.ServerEventLogging(bot))

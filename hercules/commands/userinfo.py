@@ -5,7 +5,7 @@ class UserInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="userinfo")
+    @commands.command(name="userinfo", brief="Gets information about a user", aliases=["u"])
     async def userinfo(self, ctx):
         if not ctx.message.mentions:
             user = ctx.author

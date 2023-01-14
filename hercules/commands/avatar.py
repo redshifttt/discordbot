@@ -5,7 +5,7 @@ class Avatar(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="avatar")
+    @commands.command(name="avatar", brief="Get the profile picture of a user or yourself", aliases=["avi", "pfp"])
     async def avatar(self, ctx):
         if not ctx.message.mentions:
             user = ctx.author

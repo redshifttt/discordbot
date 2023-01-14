@@ -7,7 +7,7 @@ class Search(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="search")
+    @commands.command(name="search", brief="Search the internet with search.privatevoid.net", aliases=["s", "g"])
     async def search(self, ctx, *args):
         async with self.bot.get_channel(ctx.channel.id).typing():
             # Turn command arguments (tuple) into a list

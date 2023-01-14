@@ -7,7 +7,7 @@ class ServerInfo(commands.Cog):
         self.bot = bot
         self.time_format = "%a, %b %d %Y %H:%M"
 
-    @commands.command(name="serverinfo")
+    @commands.command(name="serverinfo", brief="Gets information about the server", aliases=["si"])
     async def serverinfo(self, ctx):
         guild = ctx.guild
 
