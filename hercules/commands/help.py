@@ -15,7 +15,7 @@ class Help(commands.Cog):
             embed_content["title"] = ":grey_question: All Commands for Hercules"
             embed_content["fields"] = []
 
-            # embed_content["fields"].append({"name": "For more information run:", "value": "`.help <command>`", "inline": False})
+            embed_content["fields"].append({"name": "For more information run:", "value": "`.help <command>`", "inline": False})
 
             for command in commands:
                 command = self.bot.get_command(command)
@@ -23,6 +23,8 @@ class Help(commands.Cog):
                 command_enabled = command.enabled
                 if command_enabled:
                     command_name = ":white_check_mark: "
+                else:
+                    command_name = ":x: "
                 command_name += command.name
 
                 command_aliases = command.aliases
