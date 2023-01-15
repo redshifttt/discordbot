@@ -9,6 +9,7 @@ import hercules.commands
 from hercules.commands import ask, serverinfo, avatar, userinfo, search, settings, help
 import hercules.listeners
 from hercules.listeners import server_logs
+import hercules.helper.log as log
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=".", intents=intents, help_command=None)
@@ -17,7 +18,7 @@ os.environ['TZ'] = 'UTC'
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
+    log.in_log("INFO", "on_ready", f"Logged in as {bot.user}")
 
     await bot.add_cog(hercules.commands.ask.Ask(bot))
     await bot.add_cog(hercules.commands.serverinfo.ServerInfo(bot))
@@ -74,6 +75,18 @@ async def on_ready():
 
 @bot.event
 async def on_command_error(ctx, error):
+    guild = ctx.guild
+    guild_name = guild.name
+    guild_id = guild.id
+    channel = ctx.channel
+    channel_name = channel.name
+    channel_id = channel.id
+    user = ctx.author
+    user_id = user.id
+    user_name = f"{user.name}#{user.discriminator}"
+
+    log.in_log("ERROR", "on_command_error", f"guild_id={guild_id} guild_name='{guild_name}' channel_id={channel_id} channel_name='{channel_name}' user_id={user_id} user_tag={user_name} {error}")
+
     if ctx.message.content.startswith("._"):
         return
 
@@ -85,6 +98,22 @@ async def on_command_error(ctx, error):
     embed = discord.Embed().from_dict(embed_content)
 
     await ctx.reply(embed=embed)
+
+@bot.event
+async def on_command_completion(ctx):
+    guild = ctx.guild
+    guild_name = guild.name
+    guild_id = guild.id
+    channel = ctx.channel
+    channel_name = channel.name
+    channel_id = channel.id
+    user = ctx.author
+    user_id = user.id
+    user_name = f"{user.name}#{user.discriminator}"
+    command_name = ctx.command.name
+    command_args = [arg.message.content for arg in ctx.args[1:]]
+
+    log.in_log("ERROR", "on_command", f"guild_id={guild_id} guild_name='{guild_name}' channel_id={channel_id} channel_name='{channel_name}' user_id={user_id} user_tag={user_name} command_name='{command_name}' command_args={command_args}")
 
 with open("config.json", "r") as config:
     config = json.load(config)
