@@ -74,6 +74,9 @@ async def on_ready():
 
 @bot.event
 async def on_command_error(ctx, error):
+    if ctx.message.content.startswith("._"):
+        return
+
     embed_content = {
         "title": ":x: There was an error",
         "description": f"```{error}```"
