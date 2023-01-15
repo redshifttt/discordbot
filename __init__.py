@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 
 import hercules.commands
-from hercules.commands import ask, serverinfo, avatar, userinfo, search, settings, help
+from hercules.commands import ask, guild, avatar, userinfo, search, settings, help
 import hercules.listeners
 from hercules.listeners import server_logs
 import hercules.helper.log as log
@@ -21,7 +21,7 @@ async def on_ready():
     log.in_log("INFO", "on_ready", f"Logged in as {bot.user}")
 
     await bot.add_cog(hercules.commands.ask.Ask(bot))
-    await bot.add_cog(hercules.commands.serverinfo.ServerInfo(bot))
+    await bot.add_cog(hercules.commands.guild.GuildInfo(bot))
     await bot.add_cog(hercules.commands.avatar.Avatar(bot))
     await bot.add_cog(hercules.commands.userinfo.UserInfo(bot))
     await bot.add_cog(hercules.commands.search.Search(bot))

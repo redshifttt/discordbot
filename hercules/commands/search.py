@@ -11,7 +11,7 @@ class Search(commands.Cog):
         name="search",
         brief="Search the internet with search.privatevoid.net",
         help="Search the internet with search.privatevoid.net\n\n**Usage**\n`.search your search terms`",
-        aliases=["s", "g"]
+        aliases=["s"]
     )
     async def search(self, ctx, *args):
         async with self.bot.get_channel(ctx.channel.id).typing():
