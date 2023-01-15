@@ -8,49 +8,6 @@ class GenericListeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener(name='on_guild_channel_pins_update')
-    async def pins(self, channel, last_pin):
-        guild_id = channel.guild.id
-
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
-
-        has_pins_setting = db_cur.execute("SELECT pins_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-
-        if has_pins_setting == "null":
-            return
-
-        pins_channel = db_cur.execute("SELECT pins_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        pins_channel = self.bot.get_channel(int(pins_channel))
-
-        available_webhooks = await pins_channel.webhooks()
-
-        hook_exists = discord.utils.find(lambda h: h.name == "Hercules Pin Webhook", available_webhooks)
-
-        if hook_exists:
-            webhook = hook_exists
-        else:
-            webhook = await pins_channel.create_webhook(name="Hercules Pin Webhook")
-
-        channel_pins = await channel.pins()
-        pin = channel_pins[0]
-        if not pin:
-            print(f"no more pins in channel: {channel.name}")
-
-        name = pin.author.name
-        pfp = pin.author.avatar.url
-        content = pin.content
-
-        attachments = []
-        if pin.attachments:
-            attachments = [att.url for att in pin.attachments]
-            content = f"{content} {' '.join(attachments)}"
-
-        await webhook.send(content=content, username=name, avatar_url=pfp)
-
-        await pin.unpin()
-        db_con.close()
-
     @commands.Cog.listener(name='on_member_join')
     async def member_join(self, member):
         guild_id = member.guild.id

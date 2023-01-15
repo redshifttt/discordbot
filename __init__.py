@@ -43,7 +43,6 @@ async def on_ready():
             CREATE TABLE servers(
                 guild_id,
                 traffic_channel,
-                pins_channel,
                 verification_channel,
                 general_channel,
                 logs_channel,

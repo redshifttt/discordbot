@@ -26,14 +26,13 @@ class Settings(commands.Cog):
         db_cur = db_con.cursor()
         guild_id = ctx.guild.id
 
-        guild_id, traffic_channel, pins_channel, verification_channel, general_channel, logs_channel, join_message, leave_message, verification_message = db_cur.execute("SELECT * FROM servers WHERE guild_id=?", (guild_id,)).fetchall()[0]
+        guild_id, traffic_channel, verification_channel, general_channel, logs_channel, join_message, leave_message, verification_message = db_cur.execute("SELECT * FROM servers WHERE guild_id=?", (guild_id,)).fetchall()[0]
 
         embed_content = {
             "title": f"Hercules settings for {ctx.guild.name}",
             "fields": [
                 { "name": "┃ traffic_channel", "value": traffic_channel, "inline": False },
                 { "name": "┃ verification_channel", "value": verification_channel, "inline": False },
-                { "name": "┃ pins_channel", "value": pins_channel, "inline": False },
                 { "name": "┃ general_channel", "value": general_channel, "inline": False },
                 { "name": "┃ logs_channel", "value": logs_channel, "inline": False },
             ]
@@ -67,17 +66,6 @@ class Settings(commands.Cog):
         res = db_cur.execute(f"UPDATE servers SET traffic_channel = '{arg}' WHERE guild_id={guild_id}")
 
         await ctx.reply(f":white_check_mark: traffic_channel set to `{arg}`")
-        db_con.commit()
-        db_con.close()
-
-    @settings.command(help="Makes sure all pinned messages go to that channel. **Note**: pinned messages are pinned with a webhook so the bot will need the permissions to webhooks if you changed its permissions when adding to the server.")
-    async def pins_channel(self, ctx, arg):
-        guild_id = ctx.guild.id
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
-        res = db_cur.execute(f"UPDATE servers SET pins_channel = '{arg}' WHERE guild_id={guild_id}")
-
-        await ctx.reply(f":white_check_mark: pins_channel set to `{arg}`")
         db_con.commit()
         db_con.close()
 
