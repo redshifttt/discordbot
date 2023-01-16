@@ -6,58 +6,77 @@ class UserInfo(commands.Cog):
         self.bot = bot
 
     @commands.command(
-        name="userinfo",
+        name="user",
         brief="Gets information about a user",
-        help="Gets user information for a user or yourself.\n\n**Usage**\n`.userinfo`\n`.userinfo @user`",
+        help="Gets user information for a user or yourself.\n\n**Usage**\n`.user`\n`.user @user`\n`.user 356830440629207040`",
         aliases=["u"]
     )
-    async def userinfo(self, ctx):
-        if not ctx.message.mentions:
+    async def userinfo(self, ctx, arg=None):
+        embed_content = {}
+
+        guild = ctx.guild
+
+        if not arg:
             user = ctx.author
         else:
-            user = ctx.message.mentions[0]
+            if arg.isnumeric():
+                user = ctx.guild.get_member(int(arg)) or await self.bot.fetch_user(int(arg))
+                if not user:
+                    await ctx.reply("Not a valid user ID")
+                    return
+            if arg.startswith("<@"):
+                user = ctx.guild.get_member(int(arg[2:-1]))
 
-        current_guild = ctx.guild
-        guild_name = current_guild.name
-        guild_icon = current_guild.icon.url
+        guild_name = guild.name
+        guild_icon = guild.icon.url
 
-        username = user.name
+        username = f"{user.name}#{user.discriminator}"
+        user_creation = discord.utils.format_dt(user.created_at, style="R")
+
+        embed_content["title"] = username
+        embed_content["fields"] = []
+        embed_content["fields"].append({ "name": "Creation date", "value": user_creation, "inline": False },)
+
         user_id = user.id
-        mention = user.mention
-        status = user.raw_status
-
         pfp = user.avatar.url
-
-        user_roles = user.roles
         mention = user.mention
-        highest_role = user.top_role.name
-        permissions = user.guild_permissions
+        embed_content["fields"].append({ "name": "Mention", "value": mention, "inline": False })
 
-        perms = []
-        if permissions.administrator:
-            perms = ['Administrator']
-        else:
-            for k, v in iter(permissions):
-                if v:
-                    perms.append(f"{k.title().replace('_', ' ')}")
+        # Fucking exceptions
+        try:
+            if user.roles:
+                user_roles = user.roles
+                roles = len(user_roles)
+                embed_content["fields"].append({ "name": "Roles", "value": roles, "inline": False })
+        except:
+            pass
 
-        perms = ", ".join(perms)
+        try:
+            if user.top_role:
+                highest_role = user.top_role.name
+                embed_content["fields"].append({ "name": "Highest role", "value": highest_role, "inline": False })
+        except:
+            pass
 
-        roles = len(user_roles)
+        try:
+            if user.guild_permissions:
+                permissions = user.guild_permissions
+                perms = []
+                if permissions.administrator:
+                    perms = ['Administrator']
+                else:
+                    for k, v in iter(permissions):
+                        if v:
+                            perms.append(f"{k.title().replace('_', ' ')}")
 
-        embed_content = {
-            "title": username,
-            "fields": [
-                { "name": "Roles", "value": roles, "inline": False },
-                { "name": "Highest role", "value": highest_role, "inline": False },
-                { "name": "Permissions", "value": perms, "inline": False },
-                { "name": "Mention", "value": mention, "inline": False },
-            ]
-        }
+                perms = ", ".join(perms)
+                embed_content["fields"].append({ "name": "Permissions", "value": perms, "inline": False })
+        except:
+            pass
 
         embed = discord.Embed().from_dict(embed_content)
         embed.set_thumbnail(url=pfp)
-        embed.set_author(name=current_guild, icon_url=guild_icon)
+        embed.set_author(name=guild, icon_url=guild_icon)
         embed.set_footer(text=f"ID: {user_id}")
 
         await ctx.reply(embed=embed)
