@@ -110,8 +110,9 @@ async def on_command_completion(ctx):
     user_id = user.id
     user_name = f"{user.name}#{user.discriminator}"
     command_name = ctx.command.name
+    command_arguments = ctx.message.content
 
-    log.in_log("INFO", "on_command", f"guild_id={guild_id} guild_name='{guild_name}' channel_id={channel_id} channel_name='{channel_name}' user_id={user_id} user_tag={user_name} command_name='{command_name}'")
+    log.in_log("INFO", "on_command", f"guild_id={guild_id} guild_name='{guild_name}' channel_id={channel_id} channel_name='{channel_name}' user_id={user_id} user_tag={user_name} command_name='{command_name}' command_arguments='{command_arguments}'")
 
 with open("config.json", "r") as config:
     config = json.load(config)
