@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import hercules.helper.log as log
 
 class Avatar(commands.Cog):
     def __init__(self, bot):
@@ -21,3 +22,7 @@ class Avatar(commands.Cog):
         embed.set_image(url=user.avatar.url)
 
         await ctx.reply(embed=embed)
+
+async def setup(bot):
+    log.in_log("INFO", "command_setup", "command avatar has been loaded")
+    await bot.add_cog(Avatar(bot))

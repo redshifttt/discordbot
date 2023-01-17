@@ -3,6 +3,7 @@ from discord.ext import commands
 import humanize
 import datetime as dt
 import sqlite3
+import hercules.helper.log as log
 
 class ServerEventLogging(commands.Cog):
     def __init__(self, bot):
@@ -231,3 +232,7 @@ class ServerEventLogging(commands.Cog):
             embed.set_footer(text=f"User ID: {member_id}")
 
             await logs_channel.send(embed=embed)
+
+async def setup(bot):
+    log.in_log("INFO", "listener_setup", "listener server_logs has been loaded")
+    await bot.add_cog(ServerEventLogging(bot))

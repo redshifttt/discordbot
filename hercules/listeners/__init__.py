@@ -3,6 +3,7 @@ from discord.ext import commands
 import aiohttp
 import datetime as dt
 import sqlite3
+import hercules.helper.log as log
 
 class GenericListeners(commands.Cog):
     def __init__(self, bot):
@@ -98,3 +99,7 @@ class GenericListeners(commands.Cog):
         db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (guild_id, null, null, null, null, null, null, null, null,))
         db_con.commit()
 
+
+async def setup(bot):
+    log.in_log("INFO", "listener_setup", "listener GenericListeners has been loaded")
+    await bot.add_cog(GenericListeners(bot))

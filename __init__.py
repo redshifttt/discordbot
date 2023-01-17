@@ -4,11 +4,6 @@ import aiohttp
 import sqlite3
 import discord
 from discord.ext import commands
-
-import hercules.commands
-from hercules.commands import ask, guild, avatar, userinfo, search, settings, help
-import hercules.listeners
-from hercules.listeners import server_logs
 import hercules.helper.log as log
 
 intents = discord.Intents.all()
@@ -20,16 +15,15 @@ os.environ['TZ'] = 'UTC'
 async def on_ready():
     log.in_log("INFO", "on_ready", f"Logged in as {bot.user}")
 
-    await bot.add_cog(hercules.commands.ask.Ask(bot))
-    await bot.add_cog(hercules.commands.guild.GuildInfo(bot))
-    await bot.add_cog(hercules.commands.avatar.Avatar(bot))
-    await bot.add_cog(hercules.commands.userinfo.UserInfo(bot))
-    await bot.add_cog(hercules.commands.search.Search(bot))
-    await bot.add_cog(hercules.commands.settings.Settings(bot))
-    await bot.add_cog(hercules.commands.help.Help(bot))
+    for file in os.listdir("hercules/commands"):
+        if "pycache" in file:
+            continue
+        await bot.load_extension("hercules.commands." + file[0:-3])
 
-    await bot.add_cog(hercules.listeners.GenericListeners(bot))
-    await bot.add_cog(hercules.listeners.server_logs.ServerEventLogging(bot))
+    for file in os.listdir("hercules/listeners"):
+        if "pycache" in file:
+            continue
+        await bot.load_extension("hercules.listeners." + file[0:-3])
 
     production_bot_id = 1001084456712544307
 

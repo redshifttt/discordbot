@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import datetime as dt
+import hercules.helper.log as log
 
 class GuildInfo(commands.Cog):
     def __init__(self, bot):
@@ -156,3 +157,7 @@ class GuildInfo(commands.Cog):
         embed.set_footer(text=f"ID: {server_id}")
 
         await ctx.reply(embed=embed)
+
+async def setup(bot):
+    log.in_log("INFO", "command_setup", "command guild has been loaded")
+    await bot.add_cog(GuildInfo(bot))

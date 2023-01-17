@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import hercules.helper.log as log
 
 class Help(commands.Cog):
     def __init__(self, bot):
@@ -82,3 +83,7 @@ class Help(commands.Cog):
             embed = discord.Embed.from_dict(embed_content)
 
             await ctx.reply(embed=embed)
+
+async def setup(bot):
+    log.in_log("INFO", "command_setup", "command help has been loaded")
+    await bot.add_cog(Help(bot))
