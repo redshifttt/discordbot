@@ -104,6 +104,28 @@ class Settings(commands.Cog):
 
         await ctx.reply(embed=embed)
 
+    @settings.command(help="Turn the join/leave messages system on or off")
+    async def join_leave(self, ctx, arg):
+        guild = ctx.guild
+        guild_id = guild.id
+        arg = arg.lower()
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+
+        match arg:
+            case "on":
+                res = db_cur.execute(f"UPDATE servers SET join_leave_system = 'on' WHERE guild_id={guild_id}")
+                await ctx.reply(f":white_check_mark: Join/Leave System turned on.")
+            case "off":
+                res = db_cur.execute(f"UPDATE servers SET join_leave_system = 'null' WHERE guild_id={guild_id}")
+                await ctx.reply(f":white_check_mark: Join/Leave System turned off.")
+            case _:
+                await ctx.reply("Not a valid value. `on|off` expected.")
+
+        db_con.commit()
+        db_con.close()
+
     @settings.command(help="Makes sure all join/leave messages go to that channel.")
     async def traffic_channel(self, ctx, arg):
         guild = ctx.guild
@@ -126,81 +148,6 @@ class Settings(commands.Cog):
         res = db_cur.execute(f"UPDATE servers SET traffic_channel = '{arg}' WHERE guild_id={guild_id}")
 
         await ctx.reply(f":white_check_mark: traffic_channel set to {arg_channel_name}")
-        db_con.commit()
-        db_con.close()
-
-    @settings.command(help="Makes sure, eventually, that verification messages will be posted when a user joins.")
-    async def verification_channel(self, ctx, arg):
-        guild = ctx.guild
-        guild_id = guild.id
-
-        if arg.startswith("<#"):
-            arg_as_id = arg[2:-1] # extract id out of str
-            if arg_as_id.isnumeric():
-                arg = guild.get_channel(int(arg_as_id))
-                arg_channel_name = arg.mention
-                arg = arg.id
-        elif arg == "null":
-            arg_channel_name = "null"
-        else:
-            await ctx.reply(":x: Invalid channel")
-            return
-
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
-        res = db_cur.execute(f"UPDATE servers SET verification_channel = '{arg}' WHERE guild_id={guild_id}")
-
-        await ctx.reply(f":white_check_mark: verification_channel set to `{arg_channel_name}`")
-        db_con.commit()
-        db_con.close()
-
-    @settings.command(help="Where general system messages will be posted.")
-    async def general_channel(self, ctx, arg):
-        guild = ctx.guild
-        guild_id = guild.id
-
-        if arg.startswith("<#"):
-            arg_as_id = arg[2:-1] # extract id out of str
-            if arg_as_id.isnumeric():
-                arg = guild.get_channel(int(arg_as_id))
-                arg_channel_name = arg.mention
-                arg = arg.id
-        elif arg == "null":
-            arg_channel_name = "null"
-        else:
-            await ctx.reply(":x: Invalid channel")
-            return
-
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
-        res = db_cur.execute(f"UPDATE servers SET general_channel = '{arg}' WHERE guild_id={guild_id}")
-
-        await ctx.reply(f":white_check_mark: general_channel set to `{arg_channel_name}`")
-        db_con.commit()
-        db_con.close()
-
-    @settings.command(help="Where server logs such as bans, message deleted, join/leave, nickname/role change go.")
-    async def logs_channel(self, ctx, arg):
-        guild = ctx.guild
-        guild_id = guild.id
-
-        if arg.startswith("<#"):
-            arg_as_id = arg[2:-1] # extract id out of str
-            if arg_as_id.isnumeric():
-                arg = guild.get_channel(int(arg_as_id))
-                arg_channel_name = arg.mention
-                arg = arg.id
-        elif arg == "null":
-            arg_channel_name = "null"
-        else:
-            await ctx.reply(":x: Invalid channel")
-            return
-
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
-        res = db_cur.execute(f"UPDATE servers SET logs_channel = '{arg}' WHERE guild_id={guild_id}")
-
-        await ctx.reply(f":white_check_mark: logs_channel set to `{arg_channel_name}`")
         db_con.commit()
         db_con.close()
 
@@ -230,6 +177,53 @@ class Settings(commands.Cog):
         db_con.commit()
         db_con.close()
 
+    @settings.command(help="Turn the verification system on or off")
+    async def verification(self, ctx, arg):
+        guild = ctx.guild
+        guild_id = guild.id
+        arg = arg.lower()
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+
+        match arg:
+            case "on":
+                res = db_cur.execute(f"UPDATE servers SET verification_system = 'on' WHERE guild_id={guild_id}")
+                await ctx.reply(f":white_check_mark: Verification System turned on.")
+            case "off":
+                res = db_cur.execute(f"UPDATE servers SET verification_system = 'null' WHERE guild_id={guild_id}")
+                await ctx.reply(f":white_check_mark: Verification System turned off.")
+            case _:
+                await ctx.reply("Not a valid value. `on|off` expected.")
+
+        db_con.commit()
+        db_con.close()
+
+    @settings.command(help="Makes sure, eventually, that verification messages will be posted when a user joins.")
+    async def verification_channel(self, ctx, arg):
+        guild = ctx.guild
+        guild_id = guild.id
+
+        if arg.startswith("<#"):
+            arg_as_id = arg[2:-1] # extract id out of str
+            if arg_as_id.isnumeric():
+                arg = guild.get_channel(int(arg_as_id))
+                arg_channel_name = arg.mention
+                arg = arg.id
+        elif arg == "null":
+            arg_channel_name = "null"
+        else:
+            await ctx.reply(":x: Invalid channel")
+            return
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+        res = db_cur.execute(f"UPDATE servers SET verification_channel = '{arg}' WHERE guild_id={guild_id}")
+
+        await ctx.reply(f":white_check_mark: verification_channel set to `{arg_channel_name}`")
+        db_con.commit()
+        db_con.close()
+
     @settings.command(help="**Must have verification_channel set.** The message that is posted in the verification_channel when a user joins and has to be verified.")
     async def verification_message(self, ctx, arg):
         guild = ctx.guild
@@ -240,6 +234,100 @@ class Settings(commands.Cog):
         res = db_cur.execute(f"UPDATE servers SET verification_message = '{arg}' WHERE guild_id={guild_id}")
 
         await ctx.reply(f":white_check_mark: verification_message set to `{arg}`")
+        db_con.commit()
+        db_con.close()
+
+    @settings.command(help="Turn the verification system on or off")
+    async def logs(self, ctx, arg):
+        guild = ctx.guild
+        guild_id = guild.id
+        arg = arg.lower()
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+
+        match arg:
+            case "on":
+                res = db_cur.execute(f"UPDATE servers SET logs_system = 'on' WHERE guild_id={guild_id}")
+                await ctx.reply(f":white_check_mark: Logs System turned on.")
+            case "off":
+                res = db_cur.execute(f"UPDATE servers SET logs_system = 'null' WHERE guild_id={guild_id}")
+                await ctx.reply(f":white_check_mark: Logs System turned off.")
+            case _:
+                await ctx.reply("Not a valid value. `on|off` expected.")
+
+        db_con.commit()
+        db_con.close()
+
+    @settings.command(help="Where server logs such as bans, message deleted, join/leave, nickname/role change go.")
+    async def logs_channel(self, ctx, arg):
+        guild = ctx.guild
+        guild_id = guild.id
+
+        if arg.startswith("<#"):
+            arg_as_id = arg[2:-1] # extract id out of str
+            if arg_as_id.isnumeric():
+                arg = guild.get_channel(int(arg_as_id))
+                arg_channel_name = arg.mention
+                arg = arg.id
+        elif arg == "null":
+            arg_channel_name = "null"
+        else:
+            await ctx.reply(":x: Invalid channel")
+            return
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+        res = db_cur.execute(f"UPDATE servers SET logs_channel = '{arg}' WHERE guild_id={guild_id}")
+
+        await ctx.reply(f":white_check_mark: logs_channel set to `{arg_channel_name}`")
+        db_con.commit()
+        db_con.close()
+
+    @settings.command(help="Turn the invite deletion system on or off")
+    async def invite_nuker(self, ctx, arg):
+        guild = ctx.guild
+        guild_id = guild.id
+        arg = arg.lower()
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+
+        match arg:
+            case "on":
+                res = db_cur.execute(f"UPDATE servers SET invite_nuker_system = 'on' WHERE guild_id={guild_id}")
+                await ctx.reply(f":white_check_mark: Invite Nuker turned on.")
+            case "off":
+                res = db_cur.execute(f"UPDATE servers SET invite_nuker_system = 'null' WHERE guild_id={guild_id}")
+                await ctx.reply(f":white_check_mark: Invite Nuker turned off.")
+            case _:
+                await ctx.reply("Not a valid value. `on|off` expected.")
+
+        db_con.commit()
+        db_con.close()
+
+    @settings.command(help="Where general system messages will be posted.")
+    async def general_channel(self, ctx, arg):
+        guild = ctx.guild
+        guild_id = guild.id
+
+        if arg.startswith("<#"):
+            arg_as_id = arg[2:-1] # extract id out of str
+            if arg_as_id.isnumeric():
+                arg = guild.get_channel(int(arg_as_id))
+                arg_channel_name = arg.mention
+                arg = arg.id
+        elif arg == "null":
+            arg_channel_name = "null"
+        else:
+            await ctx.reply(":x: Invalid channel")
+            return
+
+        db_con = sqlite3.connect("data.db")
+        db_cur = db_con.cursor()
+        res = db_cur.execute(f"UPDATE servers SET general_channel = '{arg}' WHERE guild_id={guild_id}")
+
+        await ctx.reply(f":white_check_mark: general_channel set to `{arg_channel_name}`")
         db_con.commit()
         db_con.close()
 
