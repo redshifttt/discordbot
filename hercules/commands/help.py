@@ -44,45 +44,47 @@ class Help(commands.Cog):
 
             await ctx.reply(embed=embed)
             return
-        else:
-            command = self.bot.get_command(args[0])
-            if not command:
-                await ctx.reply("Command not found")
-                return
 
-            embed_content = {}
-            embed_content["title"] = f"{command.name} command"
-            embed_content["fields"] = []
+        # This only runs when given an argument
+        command = self.bot.get_command(args[0])
+        if not command:
+            await ctx.reply("Command not found")
+            return
 
-            command_enabled = command.enabled
-            if command_enabled:
-                embed_content["title"] = f":white_check_mark: {embed_content['title']}"
+        embed_content = {}
+        embed_content["title"] = f"{command.name} command"
+        embed_content["fields"] = []
 
-            command_description = command.help
-            if command_description:
-                embed_content["description"] = command_description
-            else:
-                embed_content["description"] = command.brief
+        command_enabled = command.enabled
+        if command_enabled:
+            embed_content["title"] = f":white_check_mark: {embed_content['title']}"
 
-            command_aliases = command.aliases
-            if command_aliases:
-                aliases = ", ".join(command_aliases)
-                embed_content["fields"].append({"name": "Aliases", "value": aliases, "inline": False})
+        command_description = command.help
+        embed_content["description"] = command_description
 
-            try:
-                if command.commands:
-                    subcommands = ""
-                    for sub in list(command.commands):
-                        name = sub.name
-                        description = sub.help or sub.brief or ""
-                        subcommands += f"`{name}`: {description}\n"
-                    embed_content["fields"].append({"name": "Subcommands", "value": subcommands, "inline": False})
-            except:
-                pass
+        command_aliases = command.aliases
+        if command_aliases:
+            aliases = ", ".join(command_aliases)
+            embed_content["fields"].append({"name": "Aliases", "value": aliases, "inline": False})
 
-            embed = discord.Embed.from_dict(embed_content)
+        try:
+            if command.commands:
+                subcommands = command.commands
+                all_subcommands = ""
+                for sub in list(command.commands):
+                    name = sub.name
+                    description = f"{sub.help}\n" or ""
+                    if sub.aliases:
+                        aliases = ", ".join(sub.aliases)
+                        description += f"\nAliases: {aliases}\n"
+                    all_subcommands += f"`{name}`: {description}\n"
+                embed_content["fields"].append({"name": "Subcommands", "value": all_subcommands, "inline": False})
+        except:
+            pass
 
-            await ctx.reply(embed=embed)
+        embed = discord.Embed.from_dict(embed_content)
+
+        await ctx.reply(embed=embed)
 
 async def setup(bot):
     log.in_log("INFO", "command_setup", "command help has been loaded")
