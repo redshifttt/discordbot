@@ -19,6 +19,7 @@ class Settings(commands.Cog):
 
         settings_list = ""
         systems_list = ""
+        misc_list = ""
         embed_content = {"title": f"Hercules settings for {guild.name}"}
 
         user_permissions = channel.permissions_for(ctx.author)
@@ -36,36 +37,67 @@ class Settings(commands.Cog):
         db_cur = db_con.cursor()
         guild_id = guild.id
 
-        guild_id, traffic_channel_id, verification_channel_id, general_channel_id, logs_channel_id, join_message, leave_message, verification_message = db_cur.execute("SELECT * FROM servers WHERE guild_id=?", (guild_id,)).fetchall()[0]
+        get_values_for_guild = db_cur.execute("SELECT * FROM servers WHERE guild_id=?", (guild_id,)).fetchall()[0]
 
-        if not traffic_channel_id == "null":
-            traffic_channel = guild.get_channel(int(traffic_channel_id)).mention
-            settings_list += f"`traffic_channel`: {traffic_channel}\n"
-            settings_list += f"- `join_message`: \"{join_message}\"\n"
-            settings_list += f"- `leave_message`: \"{leave_message}\"\n"
-        else:
-            settings_list += f"`traffic_channel`: null\n"
+        guild_id, \
+        traffic_channel_id, \
+        verification_channel_id, \
+        general_channel_id, \
+        logs_channel_id, \
+        join_message, \
+        leave_message, \
+        verification_message, \
+        join_leave_system, \
+        invite_nuker_system, \
+        verification_system, \
+        logs_system = get_values_for_guild
 
-        if not verification_channel_id == "null":
-            verification_channel = guild.get_channel(int(verification_channel_id)).mention
-            settings_list += f"`verification_channel`: {verification_channel}\n"
-            settings_list += f"- `verification_message`: \"{verification_message}\"\n"
+        if not join_leave_system == "null":
+            systems_list += f"**Join/Leave System** `join_leave`: :white_check_mark: On\n"
+            if not traffic_channel_id == "null":
+                traffic_channel = guild.get_channel(int(traffic_channel_id)).mention
+                settings_list += f"__**Join/Leave System**__\n"
+                settings_list += f"`traffic_channel`: {traffic_channel}\n"
+                settings_list += f"- `join_message`: \"{join_message}\"\n"
+                settings_list += f"- `leave_message`: \"{leave_message}\"\n"
         else:
-            settings_list += f"`verification_channel`: null\n"
+            systems_list += f"**Join/Leave System** `join_leave`: :x: Off\n"
+
+        if not verification_system == "null":
+            systems_list += f"**Verification System** `verification`: :white_check_mark: On\n"
+            if not verification_channel_id == "null":
+                settings_list += f"__**Verification System**__\n"
+                verification_channel = guild.get_channel(int(verification_channel_id)).mention
+                settings_list += f"`verification_channel`: {verification_channel}\n"
+                settings_list += f"- `verification_message`: \"{verification_message}\"\n"
+        else:
+            systems_list += f"**Verification System** `verification`: :x: Off\n"
+
+        if not logs_system == "null":
+            systems_list += f"**Logs System** `logs`: :white_check_mark: On\n"
+            if not logs_channel_id == "null":
+                logs_channel = guild.get_channel(int(logs_channel_id)).mention
+                settings_list += f"__**Logs System**__\n"
+                settings_list += f"`logs_channel`: {logs_channel}\n"
+        else:
+            systems_list += f"**Logs System** `logs`: :x: Off\n"
+
+        if not invite_nuker_system == "null":
+            systems_list += f"**Invite Nuker** `invite_nuker`: :white_check_mark: On\n"
+        else:
+            systems_list += f"**Invite Nuker** `invite_nuker`: :x: Off\n"
 
         if not general_channel_id == "null":
             general_channel = guild.get_channel(int(general_channel_id)).mention
-            settings_list += f"`general_channel`: {general_channel}\n"
+            misc_list += f"__**Miscellaneous**__\n"
+            misc_list += f"`general_channel`: {general_channel}\n"
         else:
-            settings_list += f"`general_channel`: null\n"
+            misc_list += f"`general_channel`: null\n"
 
-        if not logs_channel_id == "null":
-            logs_channel = guild.get_channel(int(logs_channel_id)).mention
-            settings_list += f"`logs_channel`: {logs_channel}\n"
-        else:
-            settings_list += f"`logs_channel`: null\n"
+        settings_list += misc_list
 
-        embed_content["fields"] = [{ "name": "Settings", "value": settings_list, "inline": False },]
+        embed_content["fields"] = [{"name": "Systems", "value": systems_list, "inline": False }]
+        embed_content["fields"].append({ "name": "Settings", "value": settings_list, "inline": False })
 
         embed = discord.Embed().from_dict(embed_content)
         embed.set_thumbnail(url=guild.icon.url)
@@ -210,7 +242,6 @@ class Settings(commands.Cog):
         await ctx.reply(f":white_check_mark: verification_message set to `{arg}`")
         db_con.commit()
         db_con.close()
-
 
 async def setup(bot):
     log.in_log("INFO", "command_setup", "command settings has been loaded")
