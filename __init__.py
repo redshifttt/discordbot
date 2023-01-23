@@ -57,9 +57,9 @@ async def on_ready():
         guild_id = guild.id
         res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
         if res.fetchone() == None:
-            print(f"Initialising {guild_id} in DB")
+            log.in_log("INFO", "guild_db_init", f"{guild_id} not in DB; initialising...")
             db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (guild_id, "null", "null", "null", "null", "null", "null", "null", "null",))
+                            (guild_id, "null", "null", "null", "null", "null", "null", "null", "null", "null", "null", "null",))
             db_con.commit()
 
         general_channel_in_server = discord.utils.find(lambda c: c.name == "general", guild.channels)
