@@ -20,10 +20,10 @@ async def on_ready():
             continue
         await bot.load_extension("hercules.commands." + file[0:-3])
 
-    for file in os.listdir("hercules/listeners"):
+    for file in os.listdir("hercules/systems"):
         if "pycache" in file:
             continue
-        await bot.load_extension("hercules.listeners." + file[0:-3])
+        await bot.load_extension("hercules.systems." + file[0:-3])
 
     production_bot_id = 1001084456712544307
 
@@ -42,7 +42,11 @@ async def on_ready():
                 logs_channel,
                 join_message,
                 leave_message,
-                verification_message
+                verification_message,
+                join_leave_system,
+                invite_nuker_system,
+                verification_system,
+                logs_system
             )
         """)
         db_con.commit()

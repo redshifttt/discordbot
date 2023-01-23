@@ -5,7 +5,7 @@ import datetime as dt
 import sqlite3
 import hercules.helper.log as log
 
-class ServerEventLogging(commands.Cog):
+class ServerLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -234,5 +234,5 @@ class ServerEventLogging(commands.Cog):
             await logs_channel.send(embed=embed)
 
 async def setup(bot):
-    log.in_log("INFO", "listener_setup", "listener server_logs has been loaded")
-    await bot.add_cog(ServerEventLogging(bot))
+    log.in_log("INFO", "listener_setup", "Logs System has been loaded")
+    await bot.add_cog(ServerLogs(bot))
