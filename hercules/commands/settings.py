@@ -6,14 +6,9 @@ import hercules.helper.log as log
 class Settings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.settings_panel = None
 
-    @commands.group(
-        name="settings",
-        brief="Configure the bot for the server",
-        help="This command lets you configure how the bot works in the guild.\n\n**Usage**\n`.settings subcommand #channel or \"message\"` or just `.settings` to see server settings.\n\n**Turning off a system**\n`.settings subcommand null`.",
-        aliases=["config"]
-    )
-    async def settings(self, ctx):
+    async def generate_panel(self, ctx):
         channel = ctx.channel
         guild = ctx.guild
 
@@ -21,17 +16,6 @@ class Settings(commands.Cog):
         systems_list = ""
         misc_list = ""
         embed_content = {"title": f"Hercules settings for {guild.name}"}
-
-        user_permissions = channel.permissions_for(ctx.author)
-        if ctx.author.id == 356830440629207040:
-            pass
-        else:
-            if not user_permissions.manage_guild:
-                await ctx.reply(":x: You do not have the correct permissions needed to run this command. Needs `Manage Guild`.")
-                return
-
-        if ctx.invoked_subcommand:
-            return
 
         db_con = sqlite3.connect("data.db")
         db_cur = db_con.cursor()
@@ -102,7 +86,33 @@ class Settings(commands.Cog):
         embed = discord.Embed().from_dict(embed_content)
         embed.set_thumbnail(url=guild.icon.url)
 
-        await ctx.reply(embed=embed)
+        return embed
+
+    @commands.group(
+        name="settings",
+        brief="Configure the bot for the server",
+        help="This command lets you configure how the bot works in the guild.\n\n**Usage**\n`.settings subcommand #channel or \"message\"` or just `.settings` to see server settings.\n\n**Turning off a system**\n`.settings subcommand null`.",
+        aliases=["config"]
+    )
+    async def settings(self, ctx):
+        channel = ctx.channel
+        guild = ctx.guild
+        user_permissions = channel.permissions_for(ctx.author)
+        if ctx.author.id == 356830440629207040:
+            pass
+        else:
+            if not user_permissions.manage_guild:
+                await ctx.reply(":x: You do not have the correct permissions needed to run this command. Needs `Manage Guild`.")
+                return
+
+        if ctx.invoked_subcommand:
+            return
+
+        embed = await Settings(self.bot).generate_panel(ctx)
+
+        message = await ctx.reply(embed=embed)
+        if not self.settings_panel:
+            self.settings_panel = message
 
     @settings.command(help="Turn the join/leave messages system on or off")
     async def join_leave(self, ctx, arg):
@@ -125,6 +135,10 @@ class Settings(commands.Cog):
 
         db_con.commit()
         db_con.close()
+
+        if self.settings_panel:
+            refreshed_panel = await Settings(self.bot).generate_panel(ctx)
+            await self.settings_panel.edit(embed=refreshed_panel)
 
     @settings.command(help="Makes sure all join/leave messages go to that channel.")
     async def traffic_channel(self, ctx, arg):
