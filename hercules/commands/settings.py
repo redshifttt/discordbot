@@ -91,7 +91,7 @@ class Settings(commands.Cog):
     @commands.group(
         name="settings",
         brief="Configure the bot for the server",
-        help="This command lets you configure how the bot works in the guild.\n\n**Usage**\n`.settings subcommand #channel or \"message\"` or just `.settings` to see server settings.\n\n**Turning off a system**\n`.settings subcommand null`.",
+        help="This command lets you configure how the bot works in the guild.\n\n**Usage**\n`.settings subcommand #channel or \"message\"` or just `.settings` to see server settings.\n\n**Turning off a system**\n`.settings subcommand null`.\n\n**Note:** When you run `.settings` to show all settings then `.settings <subcommand> <value>` to set a setting, the original settings panel will update in-place with your changes!",
         aliases=["config"]
     )
     async def settings(self, ctx):
