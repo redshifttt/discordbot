@@ -4,6 +4,7 @@ import aiohttp
 import sqlite3
 import discord
 from discord.ext import commands
+import time
 import hercules.helper.log as log
 
 intents = discord.Intents.all()
@@ -13,6 +14,7 @@ os.environ['TZ'] = 'UTC'
 
 @bot.event
 async def on_ready():
+    bot_start_load_time = time.time()
     log.in_log("INFO", "on_ready", f"Logged in as {bot.user}")
 
     for file in os.listdir("hercules/commands"):
@@ -24,6 +26,10 @@ async def on_ready():
         if "pycache" in file:
             continue
         await bot.load_extension("hercules.systems." + file[0:-3])
+
+    bot_finish_load_time = time.time()
+
+    log.in_log("INFO", "benchmark", f"Finished loading in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
 
     production_bot_id = 1001084456712544307
 
