@@ -1,10 +1,9 @@
 import os
 import json
-import aiohttp
 import sqlite3
+import time
 import discord
 from discord.ext import commands
-import time
 import hercules.helper.log as log
 
 intents = discord.Intents.all()
@@ -31,29 +30,28 @@ async def on_ready():
 
     log.in_log("INFO", "benchmark", f"Finished loading in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
 
-    production_bot_id = 1001084456712544307
-
     db_con = sqlite3.connect("data.db")
     db_cur = db_con.cursor()
 
     res = db_cur.execute("SELECT name FROM sqlite_master WHERE name='servers'")
 
-    if res.fetchone() == None:
+    if res.fetchone() is None:
         db_cur.execute("""
-            CREATE TABLE servers(
-                guild_id,
-                traffic_channel,
-                verification_channel,
-                general_channel,
-                logs_channel,
-                join_message,
-                leave_message,
-                verification_message,
-                join_leave_system,
-                invite_nuker_system,
-                verification_system,
-                logs_system
-            )
+        CREATE TABLE
+        servers(
+            guild_id,
+            traffic_channel,
+            verification_channel,
+            general_channel,
+            logs_channel,
+            join_message,
+            leave_message,
+            verification_message,
+            join_leave_system,
+            invite_nuker_system,
+            verification_system,
+            logs_system
+        )
         """)
         db_con.commit()
 
@@ -62,16 +60,16 @@ async def on_ready():
     for guild in guilds:
         guild_id = guild.id
         res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
-        if res.fetchone() == None:
-            log.in_log("INFO", "guild_db_init", f"{guild_id} not in DB; initialising...")
-            db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (guild_id, "null", "null", "null", "null", "null", "null", "null", "null", "null", "null", "null",))
+        if res.fetchone() is None:
+            log.in_log("INFO", "guild_db_init", f"a guild is not in DB; initialising...")
+            db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (guild_id, None, None, None, None, None, None, None, None, None, None, None,))
             db_con.commit()
 
         general_channel_in_server = discord.utils.find(lambda c: c.name == "general", guild.channels)
 
         if general_channel_in_server:
-            res = db_cur.execute(f"UPDATE servers SET general_channel = {general_channel_in_server.id} WHERE guild_id={guild_id}")
+            res = db_cur.execute(f"UPDATE servers SET general_channel = ? WHERE guild_id=?", (general_channel_in_server.id, guild_id))
             db_con.commit()
 
     db_con.close()
@@ -118,7 +116,7 @@ async def on_command_completion(ctx):
 
     log.in_log("INFO", "on_command", f"guild_id={guild_id} guild_name='{guild_name}' channel_id={channel_id} channel_name='{channel_name}' user_id={user_id} user_tag={user_name} command_name='{command_name}' command_arguments='{command_arguments}'")
 
-with open("config.json", "r") as config:
+with open("config.json", "r", encoding="utf-8") as config:
     config = json.load(config)
 
 real_bot = int(os.getenv("REAL"))
