@@ -1,4 +1,3 @@
-import discord
 import datetime as dt
 
 def in_log(log_type: str, method_name: str, message: str):
