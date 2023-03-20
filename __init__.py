@@ -30,13 +30,13 @@ async def on_ready():
 
     log.in_log("INFO", "benchmark", f"Finished loading in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
 
-    db_con = sqlite3.connect("data.db")
-    db_cur = db_con.cursor()
+    db_connection = sqlite3.connect("data.db")
+    db_cursor = db_connection.cursor()
 
-    res = db_cur.execute("SELECT name FROM sqlite_master WHERE name='servers'")
+    res = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='servers'")
 
     if res.fetchone() is None:
-        db_cur.execute("""
+        db_cursor.execute("""
         CREATE TABLE
         servers(
             guild_id,
@@ -53,26 +53,26 @@ async def on_ready():
             logs_system
         )
         """)
-        db_con.commit()
+        db_connection.commit()
 
     guilds = bot.guilds
 
     for guild in guilds:
         guild_id = guild.id
-        res = db_cur.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
+        res = db_cursor.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
         if res.fetchone() is None:
             log.in_log("INFO", "guild_db_init", f"a guild is not in DB; initialising...")
-            db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            db_cursor.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             (guild_id, None, None, None, None, None, None, None, None, None, None, None,))
-            db_con.commit()
+            db_connection.commit()
 
         general_channel_in_server = discord.utils.find(lambda c: c.name == "general", guild.channels)
 
         if general_channel_in_server:
-            res = db_cur.execute(f"UPDATE servers SET general_channel = ? WHERE guild_id=?", (general_channel_in_server.id, guild_id))
-            db_con.commit()
+            res = db_cursor.execute(f"UPDATE servers SET general_channel = ? WHERE guild_id=?", (general_channel_in_server.id, guild_id))
+            db_connection.commit()
 
-    db_con.close()
+    db_connection.close()
 
 @bot.event
 async def on_command_error(ctx, error):

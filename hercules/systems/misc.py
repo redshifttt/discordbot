@@ -4,6 +4,7 @@ import aiohttp
 import datetime as dt
 import sqlite3
 import hercules.helper.log as log
+import hercules.helper.herculesdb as db
 
 class MiscListeners(commands.Cog):
     def __init__(self, bot):
@@ -43,11 +44,11 @@ class MiscListeners(commands.Cog):
     async def db_server_init(self, guild):
         guild_id = guild.id
 
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
+        db_connection, db_cursor = db.connect_to_db("data.db")
 
-        db_cur.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (guild_id, null, null, null, null, null, null, null, null,))
-        db_con.commit()
+        db_cursor.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (guild_id, None, None, None, None, None, None, None, None, None, None, None,))
+        db_connection.commit()
 
 async def setup(bot):
     log.in_log("INFO", "listener_setup", "listener MiscListeners has been loaded")

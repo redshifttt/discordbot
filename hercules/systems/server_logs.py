@@ -4,26 +4,30 @@ import humanize
 import datetime as dt
 import sqlite3
 import hercules.helper.log as log
+import hercules.helper.herculesdb as db
 
 class ServerLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener(name="on_member_join")
-    async def server_log_member_join(self, member):
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
         guild_id = member.guild.id
 
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
+        db_connection, db_cursor = db.connect_to_db("data.db")
 
-        general_channel = db_cur.execute("SELECT general_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_system = db_cur.execute("SELECT logs_system FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_channel = db_cur.execute("SELECT logs_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+        row = db_cursor.execute("SELECT general_channel, logs_system, logs_channel FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
+        general_channel = row["general_channel"]
+        logs_system = row["logs_system"]
+        logs_channel = row["logs_channel"]
 
-        db_con.close()
+        db_connection.close()
 
-        if not logs_system == "null":
-            if not logs_channel == "null":
+        if general_channel is not None:
+            general_channel = self.bot.get_channel(int(general_channel))
+
+        if logs_system == 1:
+            if logs_channel is not None:
                 logs_channel = self.bot.get_channel(int(logs_channel))
 
                 member_tag = f"{member.name}#{member.discriminator}"
@@ -53,24 +57,26 @@ class ServerLogs(commands.Cog):
 
                 await logs_channel.send(embed=embed)
             else:
-                general_channel = self.bot.get_channel(int(general_channel))
-                await general_channel.send(":warning: **System Message**: The Logs System has been turned on but there is no `logs_channel` set.")
+                await general_channel.send(":warning: **System Message**: The Logs System has been triggered by an event but there is no `logs_channel` set.")
 
-    @commands.Cog.listener(name="on_member_remove")
-    async def server_log_member_leave(self, member):
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
         guild_id = member.guild.id
 
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
+        db_connection, db_cursor = db.connect_to_db("data.db")
 
-        general_channel = db_cur.execute("SELECT general_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_system = db_cur.execute("SELECT logs_system FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_channel = db_cur.execute("SELECT logs_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+        row = db_cursor.execute("SELECT general_channel, logs_system, logs_channel FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
+        general_channel = row["general_channel"]
+        logs_system = row["logs_system"]
+        logs_channel = row["logs_channel"]
 
-        db_con.close()
+        db_connection.close()
 
-        if not logs_system == "null":
-            if not logs_channel == "null":
+        if general_channel is not None:
+            general_channel = self.bot.get_channel(int(general_channel))
+
+        if logs_system == 1:
+            if logs_channel is not None:
                 logs_channel = self.bot.get_channel(int(logs_channel))
 
                 member_tag = f"{member.name}#{member.discriminator}"
@@ -96,25 +102,27 @@ class ServerLogs(commands.Cog):
 
                 await logs_channel.send(embed=embed)
             else:
-                general_channel = self.bot.get_channel(int(general_channel))
-                await general_channel.send(":warning: **System Message**: The Logs System has been turned on but there is no `logs_channel` set.")
+                await general_channel.send(":warning: **System Message**: The Logs System has been triggered by an event but there is no `logs_channel` set.")
 
-    @commands.Cog.listener(name="on_member_update")
-    async def server_log_member_update(self, before, after):
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
         member = before
         guild_id = member.guild.id
 
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
+        db_connection, db_cursor = db.connect_to_db("data.db")
 
-        general_channel = db_cur.execute("SELECT general_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_system = db_cur.execute("SELECT logs_system FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_channel = db_cur.execute("SELECT logs_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+        row = db_cursor.execute("SELECT general_channel, logs_system, logs_channel FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
+        general_channel = row["general_channel"]
+        logs_system = row["logs_system"]
+        logs_channel = row["logs_channel"]
 
-        db_con.close()
+        db_connection.close()
 
-        if not logs_system == "null":
-            if not logs_channel == "null":
+        if general_channel is not None:
+            general_channel = self.bot.get_channel(int(general_channel))
+
+        if logs_system == 1:
+            if logs_channel is not None:
                 logs_channel = self.bot.get_channel(int(logs_channel))
 
                 member_tag = f"{member.name}#{member.discriminator}"
@@ -125,13 +133,23 @@ class ServerLogs(commands.Cog):
                 else:
                     member_pfp = member.avatar.url
 
+                if not before.nick:
+                    before_nick = "None"
+                else:
+                    before_nick = before.nick
+
+                if not after.nick:
+                    after_nick = "None"
+                else:
+                    after_nick = after.nick
+
                 # Nickname changes
-                if not before.nick == after.nick:
+                if not before_nick == after_nick:
                     embed_content = {
                         "title": f":writing_hand: {member_tag}'s nickname was changed",
                         "fields": [
-                            {"name": "Old nickname", "value": before.nick, "inline": True},
-                            {"name": "New nickname", "value": after.nick, "inline": True}
+                            {"name": "Old nickname", "value": before_nick, "inline": True},
+                            {"name": "New nickname", "value": after_nick, "inline": True}
                         ]
                     }
 
@@ -156,7 +174,8 @@ class ServerLogs(commands.Cog):
                     embed.set_footer(text=f"User ID: {member_id}")
 
                     await logs_channel.send(embed=embed)
-                else:
+
+                if len(before.roles) < len(after.roles): # roles must have been added
                     added_roles = list(set(after.roles).difference(before.roles))
                     added_roles = ", ".join([role.name for role in added_roles])
                     embed_content = {
@@ -171,25 +190,27 @@ class ServerLogs(commands.Cog):
 
                     await logs_channel.send(embed=embed)
             else:
-                general_channel = self.bot.get_channel(int(general_channel))
-                await general_channel.send(":warning: **System Message**: The Logs System has been turned on but there is no `logs_channel` set.")
+                await general_channel.send(":warning: **System Message**: The Logs System has been triggered by an event but there is no `logs_channel` set.")
 
-    @commands.Cog.listener(name="on_member_ban")
-    async def server_log_member_join(self, guild, user):
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild, user):
         guild_id = guild.id
         member = user
 
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
+        db_connection, db_cursor = db.connect_to_db("data.db")
 
-        general_channel = db_cur.execute("SELECT general_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_system = db_cur.execute("SELECT logs_system FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_channel = db_cur.execute("SELECT logs_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+        row = db_cursor.execute("SELECT general_channel, logs_system, logs_channel FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
+        general_channel = row["general_channel"]
+        logs_system = row["logs_system"]
+        logs_channel = row["logs_channel"]
 
-        db_con.close()
+        db_connection.close()
 
-        if not logs_system == "null":
-            if not logs_channel == "null":
+        if general_channel is not None:
+            general_channel = self.bot.get_channel(int(general_channel))
+
+        if logs_system == 1:
+            if logs_channel is not None:
                 logs_channel = self.bot.get_channel(int(logs_channel))
 
                 member_tag = f"{member.name}#{member.discriminator}"
@@ -214,27 +235,29 @@ class ServerLogs(commands.Cog):
 
                 await logs_channel.send(embed=embed)
             else:
-                general_channel = self.bot.get_channel(int(general_channel))
-                await general_channel.send(":warning: **System Message**: The Logs System has been turned on but there is no `logs_channel` set.")
+                await general_channel.send(":warning: **System Message**: The Logs System has been triggered by an event but there is no `logs_channel` set.")
 
 
-    @commands.Cog.listener(name="on_message_delete")
-    async def server_log_member_join(self, message):
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
         member = message.author
         channel = message.channel
         guild_id = message.guild.id
 
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
+        db_connection, db_cursor = db.connect_to_db("data.db")
 
-        general_channel = db_cur.execute("SELECT general_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_system = db_cur.execute("SELECT logs_system FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        logs_channel = db_cur.execute("SELECT logs_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+        row = db_cursor.execute("SELECT general_channel, logs_system, logs_channel FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
+        general_channel = row["general_channel"]
+        logs_system = row["logs_system"]
+        logs_channel = row["logs_channel"]
 
-        db_con.close()
+        db_connection.close()
 
-        if not logs_system == "null":
-            if not logs_channel == "null":
+        if general_channel is not None:
+            general_channel = self.bot.get_channel(int(general_channel))
+
+        if logs_system == 1:
+            if logs_channel is not None:
                 logs_channel = self.bot.get_channel(int(logs_channel))
 
                 member_tag = f"{member.name}#{member.discriminator}"
@@ -260,8 +283,7 @@ class ServerLogs(commands.Cog):
 
                 await logs_channel.send(embed=embed)
             else:
-                general_channel = self.bot.get_channel(int(general_channel))
-                await general_channel.send(":warning: **System Message**: The Logs System has been turned on but there is no `logs_channel` set.")
+                await general_channel.send(":warning: **System Message**: The Logs System has been triggered by an event but there is no `logs_channel` set.")
 
 async def setup(bot):
     log.in_log("INFO", "listener_setup", "Logs System has been loaded")

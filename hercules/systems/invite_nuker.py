@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import sqlite3
 import hercules.helper.log as log
+import hercules.helper.herculesdb as db
 import datetime as dt
 
 class InviteNuker(commands.Cog):
@@ -12,15 +13,15 @@ class InviteNuker(commands.Cog):
     async def invite_nuker(self, message):
         guild_id = message.guild.id
 
-        db_con = sqlite3.connect("data.db")
-        db_cur = db_con.cursor()
+        db_connection, db_cursor = db.connect_to_db("data.db")
 
-        general_channel = db_cur.execute("SELECT general_channel FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
-        invite_nuker_system = db_cur.execute("SELECT invite_nuker_system FROM servers WHERE guild_id=?", (guild_id,)).fetchone()[0]
+        row = db_cursor.execute("SELECT invite_nuker_system FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
 
-        db_con.close()
+        invite_nuker_system = row["invite_nuker_system"]
 
-        if not invite_nuker_system == "null":
+        db_connection.close()
+
+        if invite_nuker_system == 1:
             if "discord.gg" in message.content or "discord.com/invite" in message.content:
                 await message.delete()
                 await message.author.timeout(dt.timedelta(minutes=1), reason=f"Advertising in #{message.channel.name}")
