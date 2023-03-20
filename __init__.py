@@ -7,7 +7,7 @@ from discord.ext import commands
 import hercules.helper.log as log
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=".", intents=intents, help_command=None)
+bot = commands.Bot(command_prefix="./", intents=intents, help_command=None)
 
 os.environ['TZ'] = 'UTC'
 

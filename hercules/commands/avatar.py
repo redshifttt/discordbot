@@ -9,7 +9,7 @@ class Avatar(commands.Cog):
     @commands.command(
         name="avatar",
         brief="Get the profile picture of a user or yourself",
-        help="Gets the profile picture of a user or yourself.\n\n**Usage**\n`.avatar`\n`.avatar @user`",
+        help="Gets the profile picture of a user or yourself.\n\n**Usage**\n`./avatar`\n`./avatar @user`",
         aliases=["avi", "pfp"]
     )
     async def avatar(self, ctx):

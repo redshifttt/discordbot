@@ -9,7 +9,7 @@ class UserInfo(commands.Cog):
     @commands.command(
         name="user",
         brief="Gets information about a user",
-        help="Gets user information for a user or yourself.\n\n**Usage**\n`.user`\n`.user @user`\n`.user 356830440629207040`",
+        help="Gets user information for a user or yourself.\n\n**Usage**\n`./user`\n`./user @user`\n`./user 356830440629207040`",
         aliases=["u"]
     )
     async def userinfo(self, ctx, arg=None):
