@@ -35,9 +35,10 @@ class PinsSystem(commands.Cog):
                 user = message.author
                 user_name = f"{user.name}#{user.discriminator}"
                 pfp = user.avatar.url
-                message_content = message.content
+                message_content = message.content + "\n"
                 message_id = message.id
-                attachments = message.attachments
+                message_attachments = [att.url for att in message.attachments]
+                message_content += "\n".join(message_attachments)
 
                 pin_in_db = db_cursor.execute("SELECT pinned_message_id FROM pins WHERE guild_id = ?", (guild_id,)).fetchall()
                 found_pins = [pin["pinned_message_id"] for pin in pin_in_db]
