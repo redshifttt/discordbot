@@ -285,7 +285,7 @@ class Settings(commands.Cog):
                 else:
                     await ctx.reply(":x: Invalid channel")
                     return
-                arg = arg[1]
+
                 sql_str = f"UPDATE servers SET pins_channel = ? WHERE guild_id = ?", (arg, guild_id,)
                 await ctx.reply(f":white_check_mark: pins_channel set to `{arg}`")
             case "pins_webhook_url":
