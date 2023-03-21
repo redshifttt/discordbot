@@ -31,6 +31,11 @@ async def on_ready():
 
     log.in_log("INFO", "benchmark", f"Finished loading in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
 
+    server_count = len(bot.guilds)
+    user_count = len(bot.users)
+    watching = discord.Activity(type=discord.ActivityType.watching, name=f"{server_count} servers and {user_count} users.")
+    await bot.change_presence(activity=watching)
+
     db_connection, db_cursor = db.connect_to_db("data.db")
 
     has_servers_db = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='servers'").fetchone()
