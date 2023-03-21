@@ -5,6 +5,7 @@ import time
 import discord
 from discord.ext import commands
 import hercules.helper.log as log
+import hercules.helper.herculesdb as db
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="./", intents=intents, help_command=None)
@@ -30,12 +31,11 @@ async def on_ready():
 
     log.in_log("INFO", "benchmark", f"Finished loading in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
 
-    db_connection = sqlite3.connect("data.db")
-    db_cursor = db_connection.cursor()
+    db_connection, db_cursor = db.connect_to_db("data.db")
 
-    res = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='servers'")
+    has_servers_db = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='servers'").fetchone()
 
-    if res.fetchone() is None:
+    if has_servers_db is None:
         db_cursor.execute("""
         CREATE TABLE
         servers(
@@ -50,7 +50,9 @@ async def on_ready():
             join_leave_system,
             invite_nuker_system,
             verification_system,
-            logs_system
+            logs_system,
+            pins_system
+            pins_channel
         )
         """)
         db_connection.commit()
@@ -59,18 +61,34 @@ async def on_ready():
 
     for guild in guilds:
         guild_id = guild.id
-        res = db_cursor.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,))
-        if res.fetchone() is None:
-            log.in_log("INFO", "guild_db_init", f"a guild is not in DB; initialising...")
-            db_cursor.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (guild_id, None, None, None, None, None, None, None, None, None, None, None,))
+        guild_id_in_db = db_cursor.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,)).fetchone()
+        if guild_id_in_db is None:
+            log.in_log("INFO", "guild_db_init", f"guild init in DB...")
+            db_cursor.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (guild_id, None, None, None, None, None, None, None, None, None, None, None, None, None,))
             db_connection.commit()
 
         general_channel_in_server = discord.utils.find(lambda c: c.name == "general", guild.channels)
 
         if general_channel_in_server:
-            res = db_cursor.execute(f"UPDATE servers SET general_channel = ? WHERE guild_id=?", (general_channel_in_server.id, guild_id))
+            db_cursor.execute(f"UPDATE servers SET general_channel = ? WHERE guild_id=?", (general_channel_in_server.id, guild_id))
             db_connection.commit()
+
+    has_pins_db = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='pins'").fetchone()
+
+    if has_pins_db is None:
+        db_cursor.execute("""
+        CREATE TABLE
+        pins(
+            guild_id,
+            pinned_message_id,
+            pinned_user_id,
+            pin_content,
+            pin_attachments
+        )
+        """)
+        log.in_log("INFO", "pins_db_init", "pins init in DB...")
+        db_connection.commit()
 
     db_connection.close()
 

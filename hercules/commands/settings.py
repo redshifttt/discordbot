@@ -33,6 +33,8 @@ class Settings(commands.Cog):
 
         logs_channel = guild_row["logs_channel"]
 
+        pins_channel = guild_row["pins_channel"]
+
         """
         JOIN AND LEAVE SYSTEM
         """
@@ -83,6 +85,18 @@ class Settings(commands.Cog):
             case _:
                 systems += "**Invite Nuker** `invite_nuker`: :x: Off\n"
 
+        """
+        PINS SYSTEM
+        """
+        pins_system = guild_row["pins_system"]
+        match pins_system:
+            case 1:
+                systems += "**Pins System** `pins`: :white_check_mark: On\n"
+                settings += "__**Pins System**__\n"
+                settings += f"`pins_channel`: {pins_channel}\n"
+                settings += f"`pins_webhook_url`: **[REDACTED]**\n"
+            case _:
+                systems += "**Pins System** `pins`: :x: Off\n"
         """
         FINDING THE GENERAL CHANNEL
         """
@@ -181,6 +195,16 @@ class Settings(commands.Cog):
                         await ctx.reply(f":white_check_mark: Invite Nuker System turned off.")
                     case _:
                         await ctx.reply("Not a valid value. `on|off` expected.")
+            case "pins":
+                match arg[1]:
+                    case "on":
+                        sql_str = "UPDATE servers SET pins_system = ? WHERE guild_id = ?", (True, guild_id,)
+                        await ctx.reply(f":white_check_mark: Pins System turned on.")
+                    case "off":
+                        sql_str = "UPDATE servers SET pins_system = ? WHERE guild_id = ?", (False, guild_id,)
+                        await ctx.reply(f":white_check_mark: Pins System turned off.")
+                    case _:
+                        await ctx.reply("Not a valid value. `on|off` expected.")
             case "traffic_channel":
                 arg = arg[1]
                 if arg.startswith("<#"):
@@ -250,6 +274,14 @@ class Settings(commands.Cog):
                 message = arg[1]
                 sql_str = f"UPDATE servers SET verification_message = ? WHERE guild_id = ?", (message, guild_id,)
                 await ctx.reply(f":white_check_mark: verification_message set to `{message}`")
+            case "pins_channel":
+                arg = arg[1]
+                sql_str = f"UPDATE servers SET pins_channel = ? WHERE guild_id = ?", (arg, guild_id,)
+                await ctx.reply(f":white_check_mark: pins_channel set to `{arg}`")
+            case "pins_webhook_url":
+                arg = arg[1]
+                sql_str = f"UPDATE servers SET pins_webhook_url = ? WHERE guild_id = ?", (arg, guild_id,)
+                await ctx.reply(f":white_check_mark: pins_webhook_url set to `{arg}`")
 
         if sql_str:
             print(sql_str[0], sql_str[1])
