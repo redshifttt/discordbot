@@ -50,6 +50,11 @@ class MiscListeners(commands.Cog):
                         (guild_id, None, None, None, None, None, None, None, None, None, None, None,))
         db_connection.commit()
 
+    @commands.Cog.listener(name='on_message')
+    async def at_everyone(self, message):
+        if message.mention_everyone:
+            await message.reply("shut up")
+
 async def setup(bot):
     log.in_log("INFO", "listener_setup", "listener MiscListeners has been loaded")
     await bot.add_cog(MiscListeners(bot))
