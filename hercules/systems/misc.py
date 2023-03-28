@@ -46,8 +46,7 @@ class MiscListeners(commands.Cog):
 
         db_connection, db_cursor = db.connect_to_db("data.db")
 
-        db_cursor.execute("INSERT INTO servers VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        (guild_id, None, None, None, None, None, None, None, None, None, None, None,))
+        db_cursor.execute("INSERT INTO servers VALUES(?)", (guild_id,))
         db_connection.commit()
 
     @commands.Cog.listener(name='on_message')
