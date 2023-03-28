@@ -115,7 +115,10 @@ class Settings(commands.Cog):
         embed_content["fields"].append({ "name": "Settings", "value": settings, "inline": False })
 
         embed = discord.Embed().from_dict(embed_content)
-        embed.set_thumbnail(url=guild.icon.url)
+
+        guild_icon = guild.icon.url
+        if guild_icon:
+            embed.set_thumbnail(url=guild_icon)
 
         return embed
 
