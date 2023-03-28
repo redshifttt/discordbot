@@ -34,6 +34,7 @@ class Settings(commands.Cog):
         logs_channel = guild_row["logs_channel"]
 
         pins_channel = guild_row["pins_channel"]
+        pins_blacklist = guild_row["pins_blacklist"]
 
         """
         JOIN AND LEAVE SYSTEM
@@ -94,7 +95,8 @@ class Settings(commands.Cog):
                 systems += "**Pins System** `pins`: :white_check_mark: On\n"
                 settings += "__**Pins System**__\n"
                 settings += f"`pins_channel`: {pins_channel}\n"
-                settings += f"`pins_webhook_url`: **[REDACTED]**\n"
+                settings += "`pins_webhook_url`: **[REDACTED]**\n"
+                settings += f"`pins_blacklist`: {pins_blacklist}\n"
             case _:
                 systems += "**Pins System** `pins`: :x: Off\n"
         """
@@ -292,6 +294,27 @@ class Settings(commands.Cog):
                 arg = arg[1]
                 sql_str = f"UPDATE servers SET pins_webhook_url = ? WHERE guild_id = ?", (arg, guild_id,)
                 await ctx.reply(f":white_check_mark: pins_webhook_url set to `{arg}`")
+            case "pins_blacklist":
+                arg = arg[1]
+                if arg.startswith("<#"):
+                    arg_as_id = arg[2:-1]
+                    if arg_as_id.isnumeric():
+                        arg = guild.get_channel(int(arg_as_id))
+                        arg_channel_name = arg.mention
+                        arg = arg.id
+                else:
+                    await ctx.reply(":x: Invalid channel")
+                    return
+
+                has_value = db_cursor.execute("SELECT pins_blacklist FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()["pins_blacklist"]
+
+                if has_value is not None:
+                    concat_arg = "," + str(arg)
+                    sql_str = f"UPDATE servers SET pins_blacklist = pins_blacklist || ? WHERE guild_id = ?;", (concat_arg, guild_id,)
+                else:
+                    sql_str = f"UPDATE servers SET pins_blacklist = ? WHERE guild_id = ?", (arg, guild_id,)
+
+                await ctx.reply(f":white_check_mark: pins_blacklist set to `{arg}`")
 
         if sql_str:
             print(sql_str[0], sql_str[1])

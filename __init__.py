@@ -57,7 +57,8 @@ async def on_ready():
             verification_system,
             logs_system,
             pins_system
-            pins_channel
+            pins_channel,
+            pins_blacklist
         )
         """)
         db_connection.commit()
