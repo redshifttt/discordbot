@@ -21,15 +21,18 @@ class PinsSystem(commands.Cog):
         general_channel = row["general_channel"]
 
         if pins_system == 1:
-            row = db_cursor.execute("SELECT pins_channel, pins_webhook_url, pins_blacklist FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
-            pins_channel = row["pins_channel"]
+            row = db_cursor.execute("SELECT pins_webhook_url, pins_blacklist FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
             pins_webhook_url = row["pins_webhook_url"]
             pins_blacklist = row["pins_blacklist"]
 
             if pins_blacklist is not None:
-                channel_ids = [int(c) for c in pins_blacklist.split(",")]
-                if channel.id in channel_ids:
-                    return
+                if type(pins_blacklist) is not int:
+                    channel_ids = [int(c) for c in pins_blacklist.split(",")]
+                    if channel.id in channel_ids:
+                        return
+                else:
+                    if channel.id == pins_blacklist:
+                        return
 
             if pins_webhook_url is None:
                 await general_channel.send(":x: No webhook URL set for the Pins System")
