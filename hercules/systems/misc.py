@@ -49,6 +49,18 @@ class MiscListeners(commands.Cog):
         db_cursor.execute("INSERT INTO servers VALUES(?)", (guild_id,))
         db_connection.commit()
 
+        server_count = len(self.bot.guilds)
+        user_count = len(self.bot.users)
+        watching = discord.Activity(type=discord.ActivityType.watching, name=f"{server_count} servers and {user_count} users.")
+        await self.bot.change_presence(activity=watching)
+
+    @commands.Cog.listener(name='on_guild_remove')
+    async def update_presence_onguildleave(self, guild):
+        server_count = len(self.bot.guilds)
+        user_count = len(self.bot.users)
+        watching = discord.Activity(type=discord.ActivityType.watching, name=f"{server_count} servers and {user_count} users.")
+        await self.bot.change_presence(activity=watching)
+
     @commands.Cog.listener(name='on_message')
     async def at_everyone(self, message):
         if message.mention_everyone:
