@@ -203,32 +203,6 @@ class Settings(commands.Cog):
 
         db_connection.close()
 
-        return
-
-        # match arg[0]:
-        #     case "pins_blacklist":
-        #         arg = arg[1]
-        #         if arg.startswith("<#"):
-        #             arg_as_id = arg[2:-1]
-        #             if arg_as_id.isnumeric():
-        #                 arg = guild.get_channel(int(arg_as_id))
-        #                 arg_channel_name = arg.mention
-        #                 arg = arg.id
-        #         else:
-        #             await ctx.reply(":x: Invalid channel")
-        #             return
-        #
-        #         has_value = db_cursor.execute("SELECT pins_blacklist FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()["pins_blacklist"]
-        #
-        #         if has_value is not None:
-        #             concat_arg = "," + str(arg)
-        #             sql_str = f"UPDATE servers SET pins_blacklist = pins_blacklist || ? WHERE guild_id = ?", (concat_arg, guild_id,)
-        #         else:
-        #             sql_str = f"UPDATE servers SET pins_blacklist = ? WHERE guild_id = ?", (arg, guild_id,)
-        #
-        #         await ctx.reply(f":white_check_mark: pins_blacklist set to `{arg}`")
-
-
     @settings.command()
     async def remove(self, ctx, arg):
         guild = ctx.guild
