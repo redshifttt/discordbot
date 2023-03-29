@@ -40,7 +40,6 @@ class Settings(commands.Cog):
         JOIN AND LEAVE SYSTEM
         """
         join_leave_system = guild_row["join_leave_system"]
-        print(join_leave_system)
         match join_leave_system:
             case 1:
                 systems += "**Join/Leave System** `join_leave`: :white_check_mark: On\n"
@@ -116,9 +115,9 @@ class Settings(commands.Cog):
 
         embed = discord.Embed().from_dict(embed_content)
 
-        guild_icon = guild.icon.url
+        guild_icon = guild.icon
         if guild_icon:
-            embed.set_thumbnail(url=guild_icon)
+            embed.set_thumbnail(url=guild_icon.url)
 
         return embed
 
@@ -268,7 +267,6 @@ class Settings(commands.Cog):
                 await ctx.reply(f":white_check_mark: general_channel set to {arg_channel_name}")
             case "join_message":
                 message = arg[1]
-                print(message)
                 sql_str = f"UPDATE servers SET join_message = ? WHERE guild_id = ?", (message, guild_id,)
                 await ctx.reply(f":white_check_mark: join_message set to `{message}`")
             case "leave_message":
@@ -323,6 +321,27 @@ class Settings(commands.Cog):
             print(sql_str[0], sql_str[1])
             db_cursor.execute(sql_str[0], sql_str[1])
             db_connection.commit()
+
+        db_connection.close()
+
+    @settings.command()
+    async def remove(self, ctx, arg):
+        guild = ctx.guild
+        guild_id = guild.id
+
+        db_connection, db_cursor = db.connect_to_db("data.db")
+
+        guild_row = db_cursor.execute("SELECT * FROM servers WHERE guild_id=?", (guild_id,)).fetchone()
+        row_headers = guild_row.keys()
+
+        if arg not in row_headers:
+            await ctx.reply(":x: Not a valid settings variable.")
+            return
+
+        db_cursor.execute(f"UPDATE servers SET {arg} = ? WHERE guild_id = ?;", (None, guild_id,))
+        await ctx.reply(f":white_check_mark: Removed the value of variable `{arg}`")
+
+        db_connection.commit()
 
         db_connection.close()
 
