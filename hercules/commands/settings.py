@@ -15,7 +15,7 @@ class Settings(commands.Cog):
         settings = ""
         systems = ""
         misc = ""
-        embed_content = {"title": f"Hercules settings for {guild.name}"}
+        embed_content = {"title": f":tools: Hercules settings for {guild.name}"}
 
         db_connection, db_cursor = db.connect_to_db("data.db")
 
@@ -42,13 +42,13 @@ class Settings(commands.Cog):
         join_leave_system = guild_row["join_leave_system"]
         match join_leave_system:
             case 1:
-                systems += "**Join/Leave System** `join_leave`: :white_check_mark: On\n"
+                systems += "**Join/Leave System** `join_leave_system`: :white_check_mark: On\n"
                 settings += "__**Join/Leave System**__\n"
                 settings += f"`traffic_channel`: {traffic_channel}\n"
                 settings += f"- `join_message`: {join_message}\n"
                 settings += f"- `leave_message`: {leave_message}\n"
             case _:
-                systems += "**Join/Leave System** `join_leave`: :x: Off\n"
+                systems += "**Join/Leave System** `join_leave_system`: :x: Off\n"
 
         """
         VERIFICATION SYSTEM
@@ -56,12 +56,12 @@ class Settings(commands.Cog):
         verification_system = guild_row["verification_system"]
         match verification_system:
             case 1:
-                systems += "**Verification System** `verification`: :white_check_mark: On\n"
+                systems += "**Verification System** `verification_system`: :white_check_mark: On\n"
                 settings += "__**Verification System**__\n"
                 settings += f"`verification_channel`: {verification_channel}\n"
                 settings += f"- `verification_message`: {verification_message}\n"
             case _:
-                systems += "**Verification System** `verification`: :x: Off\n"
+                systems += "**Verification System** `verification_system`: :x: Off\n"
 
         """
         LOGS SYSTEM
@@ -69,11 +69,11 @@ class Settings(commands.Cog):
         logs_system = guild_row["logs_system"]
         match logs_system:
             case 1:
-                systems += "**Logs System** `logs`: :white_check_mark: On\n"
+                systems += "**Logs System** `logs_system`: :white_check_mark: On\n"
                 settings += "__**Logs System**__\n"
                 settings += f"`logs_channel`: {logs_channel}\n"
             case _:
-                systems += "**Logs System** `logs`: :x: Off\n"
+                systems += "**Logs System** `logs_system`: :x: Off\n"
 
         """
         INVITE NUKER SYSTEM
@@ -81,9 +81,9 @@ class Settings(commands.Cog):
         invite_nuker_system = guild_row["invite_nuker_system"]
         match invite_nuker_system:
             case 1:
-                systems += "**Invite Nuker** `invite_nuker`: :white_check_mark: On\n"
+                systems += "**Invite Nuker** `invite_nuker_system`: :white_check_mark: On\n"
             case _:
-                systems += "**Invite Nuker** `invite_nuker`: :x: Off\n"
+                systems += "**Invite Nuker** `invite_nuker_system`: :x: Off\n"
 
         """
         PINS SYSTEM
@@ -91,13 +91,13 @@ class Settings(commands.Cog):
         pins_system = guild_row["pins_system"]
         match pins_system:
             case 1:
-                systems += "**Pins System** `pins`: :white_check_mark: On\n"
+                systems += "**Pins System** `pins_system`: :white_check_mark: On\n"
                 settings += "__**Pins System**__\n"
                 settings += f"`pins_channel`: {pins_channel}\n"
                 settings += "`pins_webhook_url`: **[REDACTED]**\n"
                 settings += f"`pins_blacklist`: {pins_blacklist}\n"
             case _:
-                systems += "**Pins System** `pins`: :x: Off\n"
+                systems += "**Pins System** `pins_system`: :x: Off\n"
         """
         FINDING THE GENERAL CHANNEL
         """
@@ -158,164 +158,43 @@ class Settings(commands.Cog):
         guild = ctx.guild
         guild_id = guild.id
 
-        match arg[0]:
-            case "join_leave":
-                match arg[1]:
-                    case "on":
-                        sql_str = "UPDATE servers SET join_leave_system = ? WHERE guild_id = ?", (True, guild_id,)
-                        await ctx.reply(f":white_check_mark: Join/Leave System turned on.")
-                    case "off":
-                        sql_str = "UPDATE servers SET join_leave_system = ? WHERE guild_id = ?", (False, guild_id,)
-                        await ctx.reply(f":white_check_mark: Join/Leave System turned off.")
-                    case _:
-                        await ctx.reply("Not a valid value. `on|off` expected.")
-            case "logs":
-                match arg[1]:
-                    case "on":
-                        sql_str = "UPDATE servers SET logs_system = ? WHERE guild_id = ?", (True, guild_id,)
-                        await ctx.reply(f":white_check_mark: Logs System turned on.")
-                    case "off":
-                        sql_str = "UPDATE servers SET logs_system = ? WHERE guild_id = ?", (False, guild_id,)
-                        await ctx.reply(f":white_check_mark: Logs System turned off.")
-                    case _:
-                        await ctx.reply("Not a valid value. `on|off` expected.")
-            case "verification":
-                match arg[1]:
-                    case "on":
-                        sql_str = "UPDATE servers SET verification_system = ? WHERE guild_id = ?", (True, guild_id,)
-                        await ctx.reply(f":white_check_mark: Verification System turned on.")
-                    case "off":
-                        sql_str = "UPDATE servers SET verification_system = ? WHERE guild_id = ?", (False, guild_id,)
-                        await ctx.reply(f":white_check_mark: Verification System turned off.")
-                    case _:
-                        await ctx.reply("Not a valid value. `on|off` expected.")
-            case "invite_nuker":
-                match arg[1]:
-                    case "on":
-                        sql_str = "UPDATE servers SET invite_nuker_system = ? WHERE guild_id = ?", (True, guild_id,)
-                        await ctx.reply(f":white_check_mark: Invite Nuker System turned on.")
-                    case "off":
-                        sql_str = "UPDATE servers SET invite_nuker_system = ? WHERE guild_id = ?", (False, guild_id,)
-                        await ctx.reply(f":white_check_mark: Invite Nuker System turned off.")
-                    case _:
-                        await ctx.reply("Not a valid value. `on|off` expected.")
-            case "pins":
-                match arg[1]:
-                    case "on":
-                        sql_str = "UPDATE servers SET pins_system = ? WHERE guild_id = ?", (True, guild_id,)
-                        await ctx.reply(f":white_check_mark: Pins System turned on.")
-                    case "off":
-                        sql_str = "UPDATE servers SET pins_system = ? WHERE guild_id = ?", (False, guild_id,)
-                        await ctx.reply(f":white_check_mark: Pins System turned off.")
-                    case _:
-                        await ctx.reply("Not a valid value. `on|off` expected.")
-            case "traffic_channel":
-                arg = arg[1]
-                if arg.startswith("<#"):
-                    arg_as_id = arg[2:-1]
-                    if arg_as_id.isnumeric():
-                        arg = guild.get_channel(int(arg_as_id))
-                        arg_channel_name = arg.mention
-                        arg = arg.id
-                else:
-                    await ctx.reply(":x: Invalid channel")
-                    return
+        guild_row = db_cursor.execute("SELECT * FROM servers WHERE guild_id=?", (guild_id,)).fetchone()
+        row_headers = guild_row.keys()
 
-                sql_str = f"UPDATE servers SET traffic_channel = ? WHERE guild_id = ?", (arg, guild_id,)
-                await ctx.reply(f":white_check_mark: traffic_channel set to {arg_channel_name}")
-            case "verification_channel":
-                arg = arg[1]
-                if arg.startswith("<#"):
-                    arg_as_id = arg[2:-1]
-                    if arg_as_id.isnumeric():
-                        arg = guild.get_channel(int(arg_as_id))
-                        arg_channel_name = arg.mention
-                        arg = arg.id
-                else:
-                    await ctx.reply(":x: Invalid channel")
-                    return
+        if arg[0] not in row_headers:
+            await ctx.reply(":x: Not a valid settings variable.")
+            return
 
-                sql_str = f"UPDATE servers SET verification_channel = ? WHERE guild_id = ?", (arg, guild_id,)
-                await ctx.reply(f":white_check_mark: verification_channel set to {arg_channel_name}")
-            case "logs_channel":
-                arg = arg[1]
-                if arg.startswith("<#"):
-                    arg_as_id = arg[2:-1]
-                    if arg_as_id.isnumeric():
-                        arg = guild.get_channel(int(arg_as_id))
-                        arg_channel_name = arg.mention
-                        arg = arg.id
-                else:
-                    await ctx.reply(":x: Invalid channel")
-                    return
+        if arg[0].endswith("_channel"):
+            if not arg[1].isnumeric():
+                await ctx.reply(":x: Value should be a channel ID")
+                return
 
-                sql_str = f"UPDATE servers SET logs_channel = ? WHERE guild_id = ?", (arg, guild_id,)
-                await ctx.reply(f":white_check_mark: logs_channel set to {arg_channel_name}")
-            case "general_channel":
-                arg = arg[1]
-                if arg.startswith("<#"):
-                    arg_as_id = arg[2:-1]
-                    if arg_as_id.isnumeric():
-                        arg = guild.get_channel(int(arg_as_id))
-                        arg_channel_name = arg.mention
-                        arg = arg.id
-                else:
-                    await ctx.reply(":x: Invalid channel")
-                    return
+            sql_str = f"UPDATE servers SET {arg[0]} = ? WHERE guild_id = ?", (arg[1], guild_id,)
+            await ctx.reply(f":white_check_mark: {arg[0]} set to {arg[1]}")
+        elif arg[0].endswith("_system"):
+            match arg[1]:
+                case "on":
+                    sql_str = f"UPDATE servers SET {arg[0]} = ? WHERE guild_id = ?", (True, guild_id,)
+                    await ctx.reply(f":white_check_mark: {arg[0]} turned on.")
+                case "off":
+                    sql_str = f"UPDATE servers SET {arg[0]} = ? WHERE guild_id = ?", (False, guild_id,)
+                    await ctx.reply(f":white_check_mark: {arg[0]} turned off.")
+                case _:
+                    await ctx.reply("Not a valid value. `on|off` expected.")
+        elif arg[0].endswith("_blacklist"):
+            has_value = db_cursor.execute(f"SELECT {arg[0]} FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()[arg[0]]
 
-                sql_str = f"UPDATE servers SET general_channel = ? WHERE guild_id = ?", (arg, guild_id,)
-                await ctx.reply(f":white_check_mark: general_channel set to {arg_channel_name}")
-            case "join_message":
-                message = arg[1]
-                sql_str = f"UPDATE servers SET join_message = ? WHERE guild_id = ?", (message, guild_id,)
-                await ctx.reply(f":white_check_mark: join_message set to `{message}`")
-            case "leave_message":
-                message = arg[1]
-                sql_str = f"UPDATE servers SET leave_message = ? WHERE guild_id = ?", (message, guild_id,)
-                await ctx.reply(f":white_check_mark: leave_message set to `{message}`")
-            case "verification_message":
-                message = arg[1]
-                sql_str = f"UPDATE servers SET verification_message = ? WHERE guild_id = ?", (message, guild_id,)
-                await ctx.reply(f":white_check_mark: verification_message set to `{message}`")
-            case "pins_channel":
-                arg = arg[1]
-                if arg.startswith("<#"):
-                    arg_as_id = arg[2:-1]
-                    if arg_as_id.isnumeric():
-                        arg = guild.get_channel(int(arg_as_id))
-                        arg_channel_name = arg.mention
-                        arg = arg.id
-                else:
-                    await ctx.reply(":x: Invalid channel")
-                    return
+            if has_value is not None:
+                concat_arg = "," + str(arg[1])
+                sql_str = f"UPDATE servers SET {arg[0]} = {arg[0]} || ? WHERE guild_id = ?;", (concat_arg, guild_id,)
+            else:
+                sql_str = f"UPDATE servers SET {arg[0]} = ? WHERE guild_id = ?", (arg[1], guild_id,)
 
-                sql_str = f"UPDATE servers SET pins_channel = ? WHERE guild_id = ?", (arg, guild_id,)
-                await ctx.reply(f":white_check_mark: pins_channel set to `{arg}`")
-            case "pins_webhook_url":
-                arg = arg[1]
-                sql_str = f"UPDATE servers SET pins_webhook_url = ? WHERE guild_id = ?", (arg, guild_id,)
-                await ctx.reply(f":white_check_mark: pins_webhook_url set to `{arg}`")
-            case "pins_blacklist":
-                arg = arg[1]
-                if arg.startswith("<#"):
-                    arg_as_id = arg[2:-1]
-                    if arg_as_id.isnumeric():
-                        arg = guild.get_channel(int(arg_as_id))
-                        arg_channel_name = arg.mention
-                        arg = arg.id
-                else:
-                    await ctx.reply(":x: Invalid channel")
-                    return
-
-                has_value = db_cursor.execute("SELECT pins_blacklist FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()["pins_blacklist"]
-
-                if has_value is not None:
-                    concat_arg = "," + str(arg)
-                    sql_str = f"UPDATE servers SET pins_blacklist = pins_blacklist || ? WHERE guild_id = ?;", (concat_arg, guild_id,)
-                else:
-                    sql_str = f"UPDATE servers SET pins_blacklist = ? WHERE guild_id = ?", (arg, guild_id,)
-
-                await ctx.reply(f":white_check_mark: pins_blacklist set to `{arg}`")
+            await ctx.reply(f":white_check_mark: {arg[0]} set to {arg[1]}")
+        else:
+            sql_str = f"UPDATE servers SET {arg[0]} = ? WHERE guild_id = ?", (arg[1], guild_id,)
+            await ctx.reply(f":white_check_mark: {arg[0]} set to {arg[1]}")
 
         if sql_str:
             print(sql_str[0], sql_str[1])
@@ -323,6 +202,32 @@ class Settings(commands.Cog):
             db_connection.commit()
 
         db_connection.close()
+
+        return
+
+        # match arg[0]:
+        #     case "pins_blacklist":
+        #         arg = arg[1]
+        #         if arg.startswith("<#"):
+        #             arg_as_id = arg[2:-1]
+        #             if arg_as_id.isnumeric():
+        #                 arg = guild.get_channel(int(arg_as_id))
+        #                 arg_channel_name = arg.mention
+        #                 arg = arg.id
+        #         else:
+        #             await ctx.reply(":x: Invalid channel")
+        #             return
+        #
+        #         has_value = db_cursor.execute("SELECT pins_blacklist FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()["pins_blacklist"]
+        #
+        #         if has_value is not None:
+        #             concat_arg = "," + str(arg)
+        #             sql_str = f"UPDATE servers SET pins_blacklist = pins_blacklist || ? WHERE guild_id = ?", (concat_arg, guild_id,)
+        #         else:
+        #             sql_str = f"UPDATE servers SET pins_blacklist = ? WHERE guild_id = ?", (arg, guild_id,)
+        #
+        #         await ctx.reply(f":white_check_mark: pins_blacklist set to `{arg}`")
+
 
     @settings.command()
     async def remove(self, ctx, arg):
