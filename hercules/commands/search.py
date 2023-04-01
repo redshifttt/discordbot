@@ -25,12 +25,13 @@ class Search(commands.Cog):
                 requests.get(f"https://search.privatevoid.net/search?q={search_term}&format=json").text
             )["results"][:5]
 
-            embed = discord.Embed(title=f"First 5 search results for \"{' '.join(search_term)}\"", url=url_search_term)
+            embed = discord.Embed(title=f"First 5 search results for \"{' '.join(search_term)}\"")
+            embed.description = f"[Full search results]({url_search_term})"
 
             for _, r in enumerate(results, 1):
-                site_title = f"┃ {r['title']}"
+                site_title = f"{r['title']}"
                 site_url = r["url"]
-                site_description = f"{site_url}\n{r['content'][:150]}..."
+                site_description = f":link: {site_url}\n{r['content'][:150]}..."
 
                 embed.add_field(name=site_title, value=site_description, inline=False)
 
