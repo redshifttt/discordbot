@@ -46,8 +46,10 @@ class PinsSystem(commands.Cog):
                 pfp = user.avatar.url
                 message_content = message.content + "\n"
                 message_id = message.id
-                message_attachments = [att.url for att in message.attachments]
-                message_content += "\n".join(message_attachments)
+                message_attachments = []
+                for att in message.attachments:
+                    file = await att.to_file()
+                    message_attachments.append(file)
 
                 pin_in_db = db_cursor.execute("SELECT pinned_message_id FROM pins WHERE guild_id = ?", (guild_id,)).fetchall()
                 found_pins = [pin["pinned_message_id"] for pin in pin_in_db]
@@ -58,7 +60,10 @@ class PinsSystem(commands.Cog):
 
                 async with aiohttp.ClientSession() as session:
                     webhook = discord.Webhook.from_url(pins_webhook_url, session=session)
-                    await webhook.send(message_content, username=user_name, avatar_url=pfp)
+                    if len(message_attachments) == 1:
+                        await webhook.send(message_content, username=user_name, avatar_url=pfp, file=message_attachments[0])
+                    else:
+                        await webhook.send(message_content, username=user_name, avatar_url=pfp, files=message_attachments)
 
                 db_cursor.execute("INSERT INTO pins (guild_id, pinned_message_id) VALUES (?, ?)", (guild_id, message_id,))
 
