@@ -1,47 +1,62 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
     haskell-flake.url = "github:srid/haskell-flake";
+    devenv = {
+      url = "github:cachix/devenv";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nix.follows = "blank";
+      };
+    };
+    blank.url = "github:divnix/blank";
   };
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" ];
-      imports = [ inputs.haskell-flake.flakeModule ];
+      imports = [
+        inputs.haskell-flake.flakeModule
+        inputs.devenv.flakeModule
+      ];
 
-      perSystem = { self', pkgs, ... }: {
-
-        # Typically, you just want a single project named "default". But
-        # multiple projects are also possible, each using different GHC version.
+      perSystem = { config, self', pkgs, lib, ... }: let
+        inherit (config.haskellProjects.default.outputs) finalPackages;
+      in {
         haskellProjects.default = {
-          # If you have a .cabal file in the root, this option is determined
-          # automatically. Otherwise, specify all your local packages here.
-          # packages.example.root = ./.;
-
-          # The base package set representing a specific GHC version.
-          # By default, this is pkgs.haskellPackages.
-          # You may also create your own. See https://haskell.flake.page/package-set
-          # basePackages = pkgs.haskellPackages;
-
-          # Dependency overrides go here. See https://haskell.flake.page/dependency
-          # source-overrides = { };
-          # overrides = self: super: { };
-
-          # devShell = {
-          #  # Enabled by default
-          #  enable = true;  
-          #
-          #  # Programs you want to make available in the shell.
-          #  # Default programs can be disabled by setting to 'null'
-          #  tools = hp: { fourmolu = hp.fourmolu; ghcid = null; };
-          #
-          #  hlsCheck.enable = true;
-          # };
+          autoWire = false;
+          devShell.enable = false;
         };
-
-        # haskell-flake doesn't set the default package, but you can do it here.
-        packages.default = self'.packages.hercules;
+        packages = rec {
+          inherit (finalPackages) hercules;
+          default = hercules;
+        };
+        devenv.shells.default = let
+          rawShell = finalPackages.shellFor {
+            packages = lib.const [ finalPackages.hercules ];
+            nativeBuildInputs = [
+              pkgs.cabal-install
+            ];
+            withHoogle = true;
+          };
+        in {
+          env.DEVENV_ROOT = lib.mkForce "/tmp";
+          packages = rawShell.nativeBuildInputs;
+          processes = {
+            hercules.exec = "cabal run";
+          };
+          scripts = {
+            docs.exec = ''
+              echo Hoogle listening on http://127.0.0.1:30001
+              hoogle server --local --port 30001
+            '';
+          };
+          # domen pls
+          containers = lib.mkForce {};
+        };
       };
     };
 }

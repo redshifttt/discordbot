@@ -35,6 +35,12 @@ result-*
 flake.nix
 !/flake.nix
 
+# Devenv
+.devenv/
+
+# Haskell build outputs
+dist-newstyle/
+
 # For local testing
 config.json
 data.db
