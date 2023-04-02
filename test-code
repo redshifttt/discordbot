@@ -1,2 +1,0 @@
-#!/bin/sh
-REAL=1 python __init__.py
