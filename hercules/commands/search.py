@@ -8,12 +8,7 @@ class Search(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(
-        name="search",
-        brief="Search the internet with search.privatevoid.net",
-        help="Search the internet with search.privatevoid.net\n\n**Usage**\n`./search your search terms`",
-        aliases=["s"]
-    )
+    @commands.command(name="search", aliases=["s"])
     async def search(self, ctx, *args):
         async with self.bot.get_channel(ctx.channel.id).typing():
             # Turn command arguments (tuple) into a list
@@ -21,9 +16,7 @@ class Search(commands.Cog):
             url = f"https://search.privatevoid.net/search?q={search_term}&format=json"
             url_search_term = f"https://search.privatevoid.net/search?q={'+'.join(search_term)}"
 
-            results = json.loads(
-                requests.get(f"https://search.privatevoid.net/search?q={search_term}&format=json").text
-            )["results"][:5]
+            results = json.loads(requests.get(url).text)["results"][:5]
 
             embed = discord.Embed(title=f"First 5 search results for \"{' '.join(search_term)}\"")
             embed.description = f"[Full search results]({url_search_term})"
