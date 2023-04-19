@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 import hercules.helper.log as log
 import hercules.helper.herculesdb as db
+import inspect
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="./", intents=intents, help_command=None)
@@ -26,10 +27,6 @@ async def on_ready():
         if "pycache" in file:
             continue
         await bot.load_extension("hercules.systems." + file[0:-3])
-
-    bot_finish_load_time = time.time()
-
-    log.in_log("INFO", "benchmark", f"Finished loading in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
 
     server_count = len(bot.guilds)
     user_count = len(bot.users)
@@ -63,13 +60,16 @@ async def on_ready():
         """)
         db_connection.commit()
 
-    guilds = bot.guilds
+    guilds_bot_is_in = bot.guilds
 
-    for guild in guilds:
+    for guild in guilds_bot_is_in:
         guild_id = guild.id
+        guild_name = guild.name
+
         guild_id_in_db = db_cursor.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,)).fetchone()
+
         if guild_id_in_db is None:
-            log.in_log("INFO", "guild_db_init", f"guild init in DB...")
+            log.in_log("INFO", "guild_db_init", f"initializing {guild_name} ({guild_id}) in DB...")
             db_cursor.execute("INSERT INTO servers (guild_id) VALUES (?)", (guild_id,))
             db_connection.commit()
 
@@ -92,10 +92,14 @@ async def on_ready():
             pin_attachments
         )
         """)
-        log.in_log("INFO", "pins_db_init", "pins init in DB...")
+        log.in_log("INFO", "pins_db_init", "creating the pins table in DB...")
         db_connection.commit()
 
     db_connection.close()
+
+    bot_finish_load_time = time.time()
+    log.in_log("INFO", "benchmark", f"Finished bot startup in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -108,20 +112,13 @@ async def on_command_error(ctx, error):
     user = ctx.author
     user_id = user.id
     user_name = f"{user.name}#{user.discriminator}"
+    command = ctx.command
+    command_name = command.name
 
-    log.in_log("ERROR", "on_command_error", f"guild_id={guild_id} guild_name='{guild_name}' channel_id={channel_id} channel_name='{channel_name}' user_id={user_id} user_tag={user_name} {error}")
+    log.in_log("ERROR", "on_command_error", f"Failed command='{command_name}' {error}")
 
     if ctx.message.content.startswith("._"):
         return
-
-    embed_content = {
-        "title": ":x: There was an error",
-        "description": f"```{error}```"
-    }
-
-    embed = discord.Embed().from_dict(embed_content)
-
-    await ctx.reply(embed=embed)
 
 @bot.event
 async def on_command_completion(ctx):
