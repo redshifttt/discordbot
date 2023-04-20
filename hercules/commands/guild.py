@@ -95,7 +95,7 @@ class GuildInfo(commands.Cog):
             await ctx.reply(":x: Guild not found.")
             return
 
-        guild_data = await GuildInfo(self.bot).get_guild_data(ctx.guild.id)
+        guild_data = await GuildInfo(self.bot).get_guild_data(guild)
 
         await ctx.reply(embed=guild_data)
 
