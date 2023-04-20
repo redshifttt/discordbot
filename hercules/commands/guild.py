@@ -21,7 +21,6 @@ class GuildInfo(commands.Cog):
         # Emojis
         emojis = guild.emojis
         emojis_count = str(len(emojis))
-        emojis_count += f' ({" ".join([str(e) for e in emojis])})'
 
         # Members
         members = guild.member_count
