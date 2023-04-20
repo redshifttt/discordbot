@@ -147,26 +147,25 @@ class Info(commands.Cog):
 
         if not isinstance(user, discord.user.User):
             highest_role = user.top_role.name
-        else:
-            highest_role = "None"
 
-        if not isinstance(user, discord.user.User):
             roles = len(user.roles)
-        else:
-            roles = "None"
 
-        if not isinstance(user, discord.user.User):
-            perms = []
+            permissions = []
             if user.guild_permissions.administrator:
-                perms = ['Administrator']
+                permissions = ['Administrator']
             else:
                 for k, v in iter(permissions):
                     if v:
-                        perms.append(f"{k.title().replace('_', ' ')}")
+                        permissions.append(f"{k.title().replace('_', ' ')}")
 
-            perms = ", ".join(perms)
+            permissions = ", ".join(permissions)
+
+            seen_in = "\n".join([g.name for g in user.mutual_guilds])
         else:
-            perms = "None"
+            highest_role = "None"
+            roles = "None"
+            permissions = "None"
+            seen_in = "None"
 
         embed_content = {
             "title": username,
@@ -175,7 +174,8 @@ class Info(commands.Cog):
                 { "name": "Mention", "value": mention, "inline": False },
                 { "name": "Highest role", "value": highest_role, "inline": False },
                 { "name": "Roles", "value": roles, "inline": False },
-                { "name": "Permissions", "value": perms, "inline": False }
+                { "name": "Permissions", "value": permissions, "inline": False },
+                { "name": "Seen In", "value": seen_in, "inline": False }
             ]
         }
 
