@@ -22,7 +22,7 @@ class GuildInfo(commands.Cog):
         server_name = guild.name
         server_id = guild.id
         server_owner = guild.owner.mention
-        server_icon = guild.icon.url
+        server_icon = guild.icon
 
         creation_date = guild.created_at
         creation_date_relative = discord.utils.format_dt(creation_date, style="R")
@@ -71,7 +71,10 @@ class GuildInfo(commands.Cog):
         }
 
         embed = discord.Embed().from_dict(embed_content)
-        embed.set_thumbnail(url=server_icon)
+
+        if server_icon:
+            embed.set_thumbnail(url=server_icon.url)
+
         embed.set_footer(text=f"ID: {server_id}")
 
         await ctx.reply(embed=embed)
@@ -104,7 +107,7 @@ class GuildInfo(commands.Cog):
         server_name = guild.name
         server_id = guild.id
         server_owner = guild.owner.mention
-        server_icon = guild.icon.url
+        server_icon = guild.icon
 
         creation_date = guild.created_at
         creation_date_relative = discord.utils.format_dt(creation_date, style="R")
@@ -153,7 +156,8 @@ class GuildInfo(commands.Cog):
         }
 
         embed = discord.Embed().from_dict(embed_content)
-        embed.set_thumbnail(url=server_icon)
+        if server_icon:
+            embed.set_thumbnail(url=server_icon.url)
         embed.set_footer(text=f"ID: {server_id}")
 
         await ctx.reply(embed=embed)

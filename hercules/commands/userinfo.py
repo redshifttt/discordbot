@@ -29,7 +29,8 @@ class UserInfo(commands.Cog):
                 user = ctx.guild.get_member(int(arg[2:-1]))
 
         guild_name = guild.name
-        guild_icon = guild.icon.url
+        guild_icon = guild.icon
+        print(guild_icon)
 
         username = f"{user.name}#{user.discriminator}"
         user_creation = discord.utils.format_dt(user.created_at, style="R")
@@ -77,8 +78,12 @@ class UserInfo(commands.Cog):
 
         embed = discord.Embed().from_dict(embed_content)
         embed.set_thumbnail(url=pfp)
-        embed.set_author(name=guild, icon_url=guild_icon)
         embed.set_footer(text=f"ID: {user_id}")
+
+        if guild_icon:
+            embed.set_author(name=guild_name, icon_url=guild_icon.url)
+        else:
+            embed.set_author(name=guild_name)
 
         await ctx.reply(embed=embed)
 
