@@ -3,10 +3,9 @@ from discord.ext import commands
 import datetime as dt
 import hercules.helper.log as log
 
-class GuildInfo(commands.Cog):
+class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.time_format = "%a, %b %d %Y %H:%M"
 
     async def get_guild_data(self, guild_id):
         guild = self.bot.get_guild(int(guild_id))
@@ -78,12 +77,18 @@ class GuildInfo(commands.Cog):
 
         return embed
 
-    @commands.group(aliases=["g", "server"])
+    @commands.group(aliases=["i"])
+    async def info(self, ctx):
+        if ctx.invoked_subcommand:
+            return
+
+    # Guild part
+    @info.group()
     async def guild(self, ctx):
         if ctx.invoked_subcommand:
             return
 
-        guild_data = await GuildInfo(self.bot).get_guild_data(ctx.guild.id)
+        guild_data = await Info(self.bot).get_guild_data(ctx.guild.id)
 
         await ctx.reply(embed=guild_data)
 
@@ -95,12 +100,12 @@ class GuildInfo(commands.Cog):
             await ctx.reply(":x: Guild not found.")
             return
 
-        guild_data = await GuildInfo(self.bot).get_guild_data(guild.id)
+        guild_data = await Info(self.bot).get_guild_data(guild.id)
 
         await ctx.reply(embed=guild_data)
 
-    @guild.command(aliases=["a", "list", "l"])
-    async def all(self, ctx):
+    @guild.command()
+    async def index(self, ctx):
         guilds = self.bot.guilds
 
         guild_count = len(guilds)
@@ -120,6 +125,73 @@ class GuildInfo(commands.Cog):
         sorted(guilds_stats)
         await ctx.reply(guilds_stats)
 
+    # User part
+    async def handle_mention_or_id(self, ctx, user_identifier):
+        if not user_identifier:
+            return ctx.author
+
+        user_mentions = ctx.message.mentions
+        if user_mentions:
+            return user_mentions[0]
+
+        if user_identifier.isnumeric():
+            return ctx.guild.get_member(int(user_identifier)) or await self.bot.fetch_user(int(user_identifier))
+
+    async def get_user_data(self, user, guild):
+        username = f"{user.name}#{user.discriminator}"
+        user_creation_date = discord.utils.format_dt(user.created_at, style="R")
+
+        user_id = user.id
+        pfp = user.avatar.url
+        mention = user.mention
+
+        if not isinstance(user, discord.user.User):
+            highest_role = user.top_role.name
+        else:
+            highest_role = "None"
+
+        if not isinstance(user, discord.user.User):
+            roles = len(user.roles)
+        else:
+            roles = "None"
+
+        if not isinstance(user, discord.user.User):
+            perms = []
+            if user.guild_permissions.administrator:
+                perms = ['Administrator']
+            else:
+                for k, v in iter(permissions):
+                    if v:
+                        perms.append(f"{k.title().replace('_', ' ')}")
+
+            perms = ", ".join(perms)
+        else:
+            perms = "None"
+
+        embed_content = {
+            "title": username,
+            "fields": [
+                { "name": "Creation date", "value": user_creation_date, "inline": False },
+                { "name": "Mention", "value": mention, "inline": False },
+                { "name": "Highest role", "value": highest_role, "inline": False },
+                { "name": "Roles", "value": roles, "inline": False },
+                { "name": "Permissions", "value": perms, "inline": False }
+            ]
+        }
+
+        embed = discord.Embed().from_dict(embed_content)
+        embed.set_thumbnail(url=pfp)
+        embed.set_footer(text=f"ID: {user_id}")
+
+        return embed
+
+    @info.group()
+    async def user(self, ctx, arg=None):
+        user = await Info(self.bot).handle_mention_or_id(ctx, arg)
+        user_data = await Info(self.bot).get_user_data(user, ctx.guild)
+
+        await ctx.reply(embed=user_data)
+
 async def setup(bot):
-    log.in_log("INFO", "command_setup", "command guild has been loaded")
-    await bot.add_cog(GuildInfo(bot))
+    log.in_log("INFO", "command_setup", "command info has been loaded")
+    await bot.add_cog(Info(bot))
