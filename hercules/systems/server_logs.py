@@ -31,7 +31,7 @@ class ServerLogs(commands.Cog):
                 logs_channel = self.bot.get_channel(int(logs_channel))
 
                 member_tag = f"{member.name}#{member.discriminator}"
-                member_created = member.created_at.strftime("%A, %e %b %Y at %l:%M%p")
+                member_created = discord.utils.format_dt(member.created_at, style="R")
                 member_id = member.id
 
                 if not member.avatar:
@@ -80,7 +80,7 @@ class ServerLogs(commands.Cog):
                 logs_channel = self.bot.get_channel(int(logs_channel))
 
                 member_tag = f"{member.name}#{member.discriminator}"
-                member_joined_at = member.joined_at.strftime("%A, %e %b %Y at %l:%M%p")
+                member_joined_at = discord.utils.format_dt(member.joined_at, style="R")
                 member_id = member.id
 
                 if not member.avatar:
@@ -215,7 +215,7 @@ class ServerLogs(commands.Cog):
 
                 member_tag = f"{member.name}#{member.discriminator}"
                 member_id = member.id
-                member_joined_at = member.joined_at.strftime("%A, %e %b %Y at %l:%M%p")
+                member_joined_at = discord.utils.format_dt(member.joined_at, style="R")
 
                 if not member.avatar:
                     member_pfp = member.default_avatar.url
@@ -262,7 +262,6 @@ class ServerLogs(commands.Cog):
 
                 member_tag = f"{member.name}#{member.discriminator}"
                 member_id = member.id
-                member_joined_at = member.joined_at.strftime("%A, %e %b %Y at %l:%M%p")
 
                 if not member.avatar:
                     member_pfp = member.default_avatar.url
