@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import datetime as dt
 import hercules.helper.log as log
+import hercules.helper.utils as herculesutils
 
 class Info(commands.Cog):
     def __init__(self, bot):
@@ -126,17 +127,6 @@ class Info(commands.Cog):
         await ctx.reply(guilds_stats)
 
     # User part
-    async def handle_mention_or_id(self, ctx, user_identifier):
-        if not user_identifier:
-            return ctx.author
-
-        user_mentions = ctx.message.mentions
-        if user_mentions:
-            return user_mentions[0]
-
-        if user_identifier.isnumeric():
-            return ctx.guild.get_member(int(user_identifier)) or await self.bot.fetch_user(int(user_identifier))
-
     async def get_user_data(self, user, guild):
         username = f"{user.name}#{user.discriminator}"
         user_creation_date = discord.utils.format_dt(user.created_at, style="R")
@@ -187,7 +177,7 @@ class Info(commands.Cog):
 
     @info.group()
     async def user(self, ctx, arg=None):
-        user = await Info(self.bot).handle_mention_or_id(ctx, arg)
+        user = await herculesutils.handle_mention_or_id(self.bot, ctx, arg)
         user_data = await Info(self.bot).get_user_data(user, ctx.guild)
 
         await ctx.reply(embed=user_data)
