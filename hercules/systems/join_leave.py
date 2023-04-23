@@ -14,15 +14,15 @@ class JoinLeave(commands.Cog):
 
         db_connection, db_cursor = db.connect_to_db("data.db")
 
-        row = db_cursor.execute("SELECT general_channel, join_leave_system, traffic_channel, join_message, verification_system, verification_channel, verification_message FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
+        guild_row = db_cursor.execute("SELECT general_channel, join_leave_system, traffic_channel, join_message, verification_system, verification_channel, verification_message FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
 
-        general_channel = row["general_channel"]
-        join_leave_system = row["join_leave_system"]
-        traffic_channel = row["traffic_channel"]
-        join_message = row["join_message"]
-        verification_system = row["verification_system"]
-        verification_channel = row["verification_channel"]
-        verification_message = row["verification_message"]
+        general_channel = guild_row["general_channel"]
+        join_leave_system = guild_row["join_leave_system"]
+        traffic_channel = guild_row["traffic_channel"]
+        join_message = guild_row["join_message"]
+        verification_system = guild_row["verification_system"]
+        verification_channel = guild_row["verification_channel"]
+        verification_message = guild_row["verification_message"]
 
         if general_channel is not None:
             general_channel = self.bot.get_channel(int(general_channel))
@@ -53,12 +53,12 @@ class JoinLeave(commands.Cog):
 
         db_connection, db_cursor = db.connect_to_db("data.db")
 
-        row = db_cursor.execute("SELECT join_leave_system, traffic_channel, leave_message, general_channel FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
+        guild_row = db_cursor.execute("SELECT join_leave_system, traffic_channel, leave_message, general_channel FROM servers WHERE guild_id = ?", (guild_id,)).fetchone()
 
-        general_channel = row["general_channel"]
-        join_leave_system = row["join_leave_system"]
-        traffic_channel = row["traffic_channel"]
-        leave_message = row["leave_message"]
+        general_channel = guild_row["general_channel"]
+        join_leave_system = guild_row["join_leave_system"]
+        traffic_channel = guild_row["traffic_channel"]
+        leave_message = guild_row["leave_message"]
 
         if general_channel is not None:
             general_channel = self.bot.get_channel(int(general_channel))
@@ -68,7 +68,7 @@ class JoinLeave(commands.Cog):
                 traffic_channel = self.bot.get_channel(int(traffic_channel))
 
                 if leave_message is not None:
-                    await traffic_channel.send(f":outbox_tray: {member.mention} {leave_message}")
+                    await traffic_channel.send(f":outbox_tray: **{str(member)}** {leave_message}")
             else:
                 await general_channel.send(":warning: **System Message**: The Join/Leave system has been turned on but there is no `traffic_channel` set.")
 
