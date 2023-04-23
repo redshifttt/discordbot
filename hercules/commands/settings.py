@@ -15,7 +15,6 @@ class Settings(commands.Cog):
         settings = ""
         systems = ""
         misc = ""
-        embed_content = {"title": f":tools: Hercules settings for {guild.name}"}
 
         db_connection, db_cursor = db.connect_to_db("data.db")
 
@@ -110,8 +109,13 @@ class Settings(commands.Cog):
         # Combine the 2 kinds of settings
         settings += misc
 
-        embed_content["fields"] = [{"name": "Systems", "value": systems, "inline": False }]
-        embed_content["fields"].append({ "name": "Settings", "value": settings, "inline": False })
+        embed_content = {
+            "title": f":tools: Hercules settings for {guild.name}",
+            "fields": [
+                {"name": "Systems", "value": systems, "inline": False },
+                {"name": "Settings", "value": settings, "inline": False }
+            ]
+        }
 
         embed = discord.Embed().from_dict(embed_content)
 
@@ -121,12 +125,7 @@ class Settings(commands.Cog):
 
         return embed
 
-    @commands.group(
-        name="settings",
-        brief="Configure the bot for the server",
-        help="This command lets you configure how the bot works in the guild.\n\n**Usage**\n`./settings subcommand key #channel or \"message\"` or just `./settings` to see server settings.\n\n**Turning off a system**\n`./settings remove key`.",
-        aliases=["config"]
-    )
+    @commands.group(aliases=["config"])
     async def settings(self, ctx):
         channel = ctx.channel
         user_permissions = channel.permissions_for(ctx.author)
