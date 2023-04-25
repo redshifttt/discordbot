@@ -8,6 +8,16 @@ class JoinLeave(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def key_check(self, member, str_check):
+        split_message = str_check.split(" ")
+
+        for n, k in enumerate(split_message):
+            match k:
+                case "{user}":
+                    split_message[n] = member.mention
+
+        return " ".join(split_message)
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         guild_id = member.guild.id
@@ -32,7 +42,8 @@ class JoinLeave(commands.Cog):
                 traffic_channel = self.bot.get_channel(int(traffic_channel))
 
                 if join_message is not None:
-                    await traffic_channel.send(f":inbox_tray: {member.mention} {join_message}")
+                    join_message = JoinLeave(self.bot).key_check(member, join_message)
+                    await traffic_channel.send(f"{join_message}")
             else:
                 await general_channel.send(":warning: **System Message**: The Join/Leave system has been turned on but there is no `traffic_channel` set.")
 
@@ -41,14 +52,16 @@ class JoinLeave(commands.Cog):
                 verification_channel = self.bot.get_channel(int(verification_channel))
 
                 if verification_message is not None:
-                    await verification_channel.send(f"{member.mention} {verification_message}")
+                    verification_message = JoinLeave(self.bot).key_check(member, verification_message)
+                    await verification_channel.send(f"{verification_message}")
             else:
                 await general_channel.send(":warning: **System Message**: The Verification System has been turned on but there is no `verification_channel` set.")
 
         db_connection.close()
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member):
+    async def on_message(self, message):
+        member = message.author
         guild_id = member.guild.id
 
         db_connection, db_cursor = db.connect_to_db("data.db")
@@ -68,7 +81,8 @@ class JoinLeave(commands.Cog):
                 traffic_channel = self.bot.get_channel(int(traffic_channel))
 
                 if leave_message is not None:
-                    await traffic_channel.send(f":outbox_tray: **{str(member)}** {leave_message}")
+                    leave_message = JoinLeave(self.bot).key_check(member, leave_message)
+                    await traffic_channel.send(f"{leave_message}")
             else:
                 await general_channel.send(":warning: **System Message**: The Join/Leave system has been turned on but there is no `traffic_channel` set.")
 
