@@ -28,11 +28,6 @@ async def on_ready():
             continue
         await bot.load_extension("hercules.systems." + file[0:-3])
 
-    server_count = len(bot.guilds)
-    user_count = len(bot.users)
-    watching = discord.Activity(type=discord.ActivityType.watching, name=f"{server_count} servers and {user_count} users.")
-    await bot.change_presence(activity=watching)
-
     db_connection, db_cursor = db.connect_to_db("data.db")
 
     has_servers_db = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='servers'").fetchone()
@@ -99,42 +94,6 @@ async def on_ready():
 
     bot_finish_load_time = time.time()
     log.in_log("INFO", "benchmark", f"Finished bot startup in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
-
-
-@bot.event
-async def on_command_error(ctx, error):
-    guild = ctx.guild
-    guild_name = guild.name
-    guild_id = guild.id
-    channel = ctx.channel
-    channel_name = channel.name
-    channel_id = channel.id
-    user = ctx.author
-    user_id = user.id
-    user_name = f"{user.name}#{user.discriminator}"
-    command = ctx.command
-    command_name = command.name
-
-    log.in_log("ERROR", "on_command_error", f"Failed command='{command_name}' {error}")
-
-    if ctx.message.content.startswith("._"):
-        return
-
-@bot.event
-async def on_command_completion(ctx):
-    guild = ctx.guild
-    guild_name = guild.name
-    guild_id = guild.id
-    channel = ctx.channel
-    channel_name = channel.name
-    channel_id = channel.id
-    user = ctx.author
-    user_id = user.id
-    user_name = f"{user.name}#{user.discriminator}"
-    command_name = ctx.command.name
-    command_arguments = ctx.message.content
-
-    log.in_log("INFO", "on_command", f"guild_id={guild_id} guild_name='{guild_name}' channel_id={channel_id} channel_name='{channel_name}' user_id={user_id} user_tag={user_name} command_name='{command_name}' command_arguments='{command_arguments}'")
 
 with open("config.json", "r", encoding="utf-8") as config:
     config = json.load(config)
