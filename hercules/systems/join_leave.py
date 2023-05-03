@@ -60,8 +60,7 @@ class JoinLeave(commands.Cog):
         db_connection.close()
 
     @commands.Cog.listener()
-    async def on_message(self, message):
-        member = message.author
+    async def on_member_remove(self, member):
         guild_id = member.guild.id
 
         db_connection, db_cursor = db.connect_to_db("data.db")
