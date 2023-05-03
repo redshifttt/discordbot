@@ -9,7 +9,7 @@ import hercules.helper.herculesdb as db
 import inspect
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="./", intents=intents, help_command=None)
+bot = commands.Bot(command_prefix="./", intents=intents, help_command=None, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False))
 
 os.environ['TZ'] = 'UTC'
 
