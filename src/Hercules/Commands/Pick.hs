@@ -10,31 +10,20 @@ import           Control.Monad
 import           System.Random
 import Data.Maybe
 import Hercules.Errors
+import Hercules.CommandParameters.Types
 
 cmdPick :: Command
 cmdPick = Command {
   commandName = "pick",
   register = (fromJust $ createChatInput "pick" "Pick a random option") {
     createOptions = Just $ OptionsValues [
-      OptionValueString {
+      string {
         optionValueName = "first",
-        optionValueLocalizedName = Nothing,
-        optionValueDescription = "The first option",
-        optionValueLocalizedDescription = Nothing,
-        optionValueStringChoices = Left False,
-        optionValueRequired = True,
-        optionValueStringMinLen = Nothing,
-        optionValueStringMaxLen = Nothing
+        optionValueDescription = "The first option"
       },
-      OptionValueString {
+      string {
         optionValueName = "second",
-        optionValueLocalizedName = Nothing,
-        optionValueDescription = "The second option",
-        optionValueLocalizedDescription = Nothing,
-        optionValueStringChoices = Left False,
-        optionValueRequired = True,
-        optionValueStringMinLen = Nothing,
-        optionValueStringMaxLen = Nothing
+        optionValueDescription = "The second option"
       }
     ]
   },

@@ -16,6 +16,7 @@ executable hercules
         Hercules.Commands
         Hercules.Commands.Info
         Hercules.Commands.Pick
+        Hercules.CommandParameters.Types
         Hercules.Errors
         Hercules.Types
     build-depends:
