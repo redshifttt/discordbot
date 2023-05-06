@@ -9,7 +9,12 @@ import hercules.helper.herculesdb as db
 import inspect
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="./", intents=intents, help_command=None, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False))
+bot = commands.Bot(
+    command_prefix="./",
+    intents=intents,
+    help_command=None,
+    allowed_mentions=discord.AllowedMentions(everyone=False, roles=False)
+)
 
 os.environ['TZ'] = 'UTC'
 
@@ -77,16 +82,7 @@ async def on_ready():
     has_pins_db = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='pins'").fetchone()
 
     if has_pins_db is None:
-        db_cursor.execute("""
-        CREATE TABLE
-        pins(
-            guild_id,
-            pinned_message_id,
-            pinned_user_id,
-            pin_content,
-            pin_attachments
-        )
-        """)
+        db_cursor.execute("""CREATE TABLE pins( guild_id, pinned_message_id, pinned_user_id, pin_content, pin_attachments)""")
         log.in_log("INFO", "pins_db_init", "creating the pins table in DB...")
         db_connection.commit()
 
