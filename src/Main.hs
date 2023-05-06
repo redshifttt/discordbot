@@ -1,14 +1,15 @@
-{-# LANGUAGE OverloadedStrings #-}  -- allows "string literals" to be Text
 import           Control.Monad (when, void)
-import           UnliftIO.Concurrent
-import           Data.Text (isPrefixOf, toLower, Text)
+import           Data.Text (isPrefixOf, toLower)
 import qualified Data.Text.IO as TIO
 import           System.Environment (getEnv)
 import           Data.String.Conversions (cs)
+import           Control.Monad.IO.Class
 
 import           Discord
 import           Discord.Types
 import qualified Discord.Requests as R
+
+import           Hercules.Commands
 
 -- | Replies "pong" to every message that starts with "ping"
 main :: IO ()
@@ -26,10 +27,16 @@ main = do
 
 eventHandler :: Event -> DiscordHandler ()
 eventHandler event = case event of
-    MessageCreate m -> when (isPing m && not (fromBot m)) $ do
-        void $ restCall (R.CreateReaction (messageChannelId m, messageId m) "eyes")
-        threadDelay (2 * 10^6)
-        void $ restCall (R.CreateMessage (messageChannelId m) "Pong!")
+    MessageCreate m -> do
+        liftIO $ putStrLn $ "Message received: " ++ cs (messageContent m)
+        when (isPing m && not (fromBot m)) $ do
+            void $ restCall (R.CreateReaction (messageChannelId m, messageId m) "eyes")
+            void $ restCall (R.CreateMessage (messageChannelId m) "Pong!")
+    Ready apiVer _ guilds _ _ _ pApp -> do
+        liftIO $ putStrLn $ "Bot running with apiVersion=" ++ show apiVer
+                ++ "\nInitial guilds: " ++ show (length guilds)
+        registerCommands pApp
+    InteractionCreate interaction -> handleInteraction interaction
     _ -> return ()
 
 fromBot :: Message -> Bool

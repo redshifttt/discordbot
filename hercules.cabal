@@ -12,11 +12,21 @@ common warnings
 executable hercules
     import:           warnings
     main-is:          Main.hs
+    other-modules:
+        Hercules.Commands
+        Hercules.Commands.Info
+        Hercules.Commands.Pick
+        Hercules.Errors
+        Hercules.Types
     build-depends:
         base,
+        containers,
         discord-haskell,
+        random,
         string-conversions,
         text,
         unliftio
     hs-source-dirs:   src
     default-language: Haskell2010
+    default-extensions:
+        OverloadedStrings
