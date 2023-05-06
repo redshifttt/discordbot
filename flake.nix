@@ -39,6 +39,7 @@
             packages = lib.const [ finalPackages.hercules ];
             nativeBuildInputs = [
               pkgs.cabal-install
+              pkgs.haskell-language-server
             ];
             withHoogle = true;
           };
