@@ -19,6 +19,7 @@ executable hercules
         Hercules.CommandParameters.Types
         Hercules.Errors
         Hercules.Types
+        Hercules.Widgets.Embeds
     build-depends:
         base,
         containers,

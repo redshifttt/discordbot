@@ -1,24 +1,13 @@
 module Hercules.Errors where
 
-import Discord
-import Discord.Types
-import Data.Text (Text)
-import Data.String.Conversions (cs)
-import Discord.Interactions
-import qualified Discord.Requests as R
 import Data.List (singleton)
 import Control.Monad
 
-errorEmbed :: RestCallErrorCode -> CreateEmbed
-errorEmbed (RestCallErrorCode errCode errTitle errBody) = let
-  cshow :: Show a => a -> Text
-  cshow = cs . show
-  in def {
-    createEmbedAuthorName = "REST Call Error",
-    createEmbedTitle = "HTTP " <> cshow errCode <> " " <> errTitle,
-    createEmbedDescription = errBody,
-    createEmbedColor = Just DiscordColorRed
-  }
+import Discord
+import Discord.Interactions
+import qualified Discord.Requests as R
+
+import Hercules.Widgets.Embeds
 
 withInteractiveError :: Interaction -> DiscordHandler (Either RestCallErrorCode a) -> DiscordHandler (Either RestCallErrorCode a)
 withInteractiveError int action = do
