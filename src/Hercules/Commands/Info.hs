@@ -7,7 +7,6 @@ import           Hercules.Types
 import           Discord.Interactions
 import           Discord
 import qualified Discord.Requests as R
-import           Control.Monad
 import Discord.Types
 import Data.List (singleton)
 import Data.Maybe
@@ -15,12 +14,18 @@ import Data.String.Conversions (cs)
 import Data.Text (Text)
 import Hercules.Errors
 import Hercules.Interactions
+import Hercules.CommandParameters.Types
 
 cmdInfo :: Command
 cmdInfo = Command {
   commandName = "info",
   register = (fromJust $ createChatInput "info" "Show information about users or guilds") {
-    createOptions = Nothing
+    createOptions = Just $ OptionsSubcommands [
+      OptionSubcommandOrGroupSubcommand $ subcommand {
+        optionSubcommandName = "guild",
+        optionSubcommandDescription = "Display info about the current guild"
+      }
+    ]
   },
   handler = handleInfo
 }

@@ -12,3 +12,12 @@ string = OptionValueString {
   optionValueStringChoices = Left False,
   optionValueRequired = True
 }
+
+subcommand :: OptionSubcommand
+subcommand = OptionSubcommand {
+  optionSubcommandName = "subcommand",
+  optionSubcommandDescription = "A subcommand",
+  optionSubcommandLocalizedName = Nothing,
+  optionSubcommandLocalizedDescription = Nothing,
+  optionSubcommandOptions = []
+}
