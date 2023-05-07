@@ -14,5 +14,8 @@ respond int resp = let
     tok = interactionToken int
   in withInteractiveError int $ restCall $ R.CreateInteractionResponse intId tok resp
 
-respond_ :: Interaction -> InteractionResponse -> ReaderT DiscordHandle IO ()
+respond_ :: Interaction -> InteractionResponse -> DiscordHandler ()
 respond_ int resp = void $ respond int resp
+
+runInteraction :: Interaction -> DiscordHandler (Either RestCallErrorCode a) -> DiscordHandler ()
+runInteraction int action = void $ withInteractiveError int action
