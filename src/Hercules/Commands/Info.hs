@@ -14,6 +14,7 @@ import Data.Maybe
 import Data.String.Conversions (cs)
 import Data.Text (Text)
 import Hercules.Errors
+import Hercules.Interactions
 
 cmdInfo :: Command
 cmdInfo = Command {
@@ -26,25 +27,22 @@ cmdInfo = Command {
 
 handleInfo :: Interaction -> DiscordHandler ()
 handleInfo int = do
-  let intId = interactionId int
-      tok = interactionToken int
-      cshow :: Show a => a -> Text
+  let cshow :: Show a => a -> Text
       cshow = cs . show
 
   case interactionGuildId int of
-    Nothing -> void $ restCall $ R.CreateInteractionResponse intId tok $ interactionResponseBasic "failed to get guild ID"
+    Nothing -> respond_ int $ interactionResponseBasic "failed to get guild ID"
     Just gldId -> do
       r <- withInteractiveError int $ restCall $ R.GetGuild gldId
       case r of
         Left _ -> return ()
-        Right guild -> do
-          let  resp = (interactionResponseMessageBasic "") {
-                interactionResponseMessageEmbeds = Just $ singleton def {
-                  createEmbedAuthorName = "Guild Info",
-                  createEmbedTitle = guildName guild,
-                  createEmbedDescription = cshow $ guildFeatures guild,
-                  createEmbedFooterText = cshow gldId,
-                  createEmbedThumbnail = Just $ CreateEmbedImageUrl $ "https://cdn.discordapp.com/icons/" <> cshow gldId <> "/" <> fromJust (guildIcon guild) <> ".png"
-                }
-              }
-          void $ withInteractiveError int $ restCall $ R.CreateInteractionResponse intId tok $ InteractionResponseChannelMessage resp
+        Right guild ->
+          respond_ int $ InteractionResponseChannelMessage (interactionResponseMessageBasic "") {
+            interactionResponseMessageEmbeds = Just $ singleton def {
+              createEmbedAuthorName = "Guild Info",
+              createEmbedTitle = guildName guild,
+              createEmbedDescription = cshow $ guildFeatures guild,
+              createEmbedFooterText = cshow gldId,
+              createEmbedThumbnail = Just $ CreateEmbedImageUrl $ "https://cdn.discordapp.com/icons/" <> cshow gldId <> "/" <> fromJust (guildIcon guild) <> ".png"
+            }
+          }

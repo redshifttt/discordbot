@@ -1,7 +1,6 @@
 module Hercules.Commands where
 
 import           Control.Monad.IO.Class
-import           Control.Monad
 import qualified Data.Map as M
 import           Data.Text (Text)
 
@@ -13,6 +12,7 @@ import qualified Discord.Requests as R
 import           Hercules.Types
 import qualified Hercules.Commands.Info
 import qualified Hercules.Commands.Pick
+import           Hercules.Interactions
 
 allCommands :: M.Map Text Command
 allCommands = M.fromList $ map (\cmd -> (commandName cmd, cmd)) [
@@ -37,7 +37,4 @@ handleInteraction interaction = do
 
   case M.lookup (applicationCommandDataName $ applicationCommandData interaction) allCommands of
     Just cmd -> handler cmd interaction
-    Nothing -> let
-        intId = interactionId interaction
-        tok = interactionToken interaction
-      in void $ restCall $ R.CreateInteractionResponse intId tok $ interactionResponseBasic "unknown command"
+    Nothing -> respond_ interaction $ interactionResponseBasic "unknown command"
