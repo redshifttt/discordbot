@@ -40,6 +40,7 @@ handlePick int = do
   case opts of
     OptionsDataValues optsValues -> do
       case optionDataValueString $ optsValues !! (randomIndex `mod` 2) of
-        Left text -> void $ withInteractiveError int $ restCall $ R.CreateInteractionResponse intId tok $ interactionResponseBasic text
+        -- there appears to be no documentation in discord-haskell as to what the Left case is supposed to do
+        Left text -> void $ withInteractiveError int $ restCall $ R.CreateInteractionResponse intId tok $ interactionResponseBasic $ text <> " (this is the mysterious Left case that max has been searching for)"
         Right text -> void $ withInteractiveError int $ restCall $ R.CreateInteractionResponse intId tok $ interactionResponseBasic text
     OptionsDataSubcommands _ -> return ()
