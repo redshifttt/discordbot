@@ -54,6 +54,19 @@
               echo Hoogle listening on http://127.0.0.1:30001
               hoogle server --local --port 30001
             '';
+            new.exec = ''
+              [[ $# -ne 1 ]] && echo 'Usage: new <module name>' && exit 1
+              moduleName="$1"
+              modulePath="src/$(tr . / <<<"$moduleName").hs"
+              moduleDir="$(dirname "$modulePath")"
+              echo "Creating module $moduleName in $modulePath"
+              mkdir -p "$moduleDir"
+              cat > "$modulePath" <<EOF
+              module $moduleName where
+
+              import Universum
+              EOF
+            '';
           };
           # domen pls
           containers = lib.mkForce {};
