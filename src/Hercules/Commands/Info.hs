@@ -41,13 +41,36 @@ handleInfo int = do
       r <- withInteractiveError int $ restCall $ R.GetGuild gldId
       case r of
         Left _ -> return ()
-        Right guild ->
+        Right guild -> do
           respond_ int $ InteractionResponseChannelMessage (interactionResponseMessageBasic "") {
-            interactionResponseMessageEmbeds = Just $ singleton def {
+            interactionResponseMessageEmbeds = let
+              simpleCounter name valuesF = Just EmbedField {
+                embedFieldName = name,
+                embedFieldInline = Just False,
+                embedFieldValue = cshow $ length $ valuesF guild
+              }
+            in Just $ singleton def {
               createEmbedAuthorName = "Guild Info",
               createEmbedTitle = guildName guild,
+              createEmbedFields = catMaybes [
+                guildMembers guild >>= \members -> Just EmbedField {
+                  embedFieldName = "Members",
+                  embedFieldInline = Just False,
+                  embedFieldValue = let
+                    memberCount = length members
+
+                    memberIsRegular member = fromMaybe False $ memberUser member >>= \user -> Just $ not $ userIsBot user
+
+                    memberCountRegular = length $ filter memberIsRegular members
+
+                  in cshow memberCount <> " (" <> cshow memberCountRegular <> " users, " <> cshow (memberCount - memberCountRegular) <> " bots)"
+                },
+                simpleCounter "Emojis" guildEmojis,
+                simpleCounter "Roles" guildRoles,
+                simpleCounter "Stickers" guildStickers
+              ],
               createEmbedDescription = cshow $ guildFeatures guild,
               createEmbedFooterText = cshow gldId,
-              createEmbedThumbnail = Just $ CreateEmbedImageUrl $ "https://cdn.discordapp.com/icons/" <> cshow gldId <> "/" <> fromJust (guildIcon guild) <> ".png"
+              createEmbedThumbnail = guildIcon guild >>= \icon -> Just $ CreateEmbedImageUrl $ "https://cdn.discordapp.com/icons/" <> cshow gldId <> "/" <> icon <> ".png"
             }
           }
