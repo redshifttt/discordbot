@@ -1,7 +1,6 @@
 module Hercules.Interactions where
 
-import Control.Monad
-import Control.Monad.Trans.Reader
+import Universum
 
 import Discord
 import Discord.Interactions

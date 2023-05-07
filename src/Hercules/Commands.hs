@@ -1,8 +1,7 @@
 module Hercules.Commands where
 
-import           Control.Monad.IO.Class
+import           Universum
 import qualified Data.Map as M
-import           Data.Text (Text)
 
 import           Discord.Interactions
 import           Discord

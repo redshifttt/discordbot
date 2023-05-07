@@ -2,14 +2,13 @@
 
 module Hercules.Commands.Pick (cmdPick) where
 
+import           Universum
+import           Universum.Unsafe ((!!))
 import           Hercules.Types
 import           Discord.Interactions
 import           Discord
-import qualified Discord.Requests as R
-import           Control.Monad
 import           System.Random
 import Data.Maybe
-import Hercules.Errors
 import Hercules.CommandParameters.Types
 import Hercules.Interactions
 

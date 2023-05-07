@@ -1,4 +1,6 @@
 module Hercules.CommandParameters.Types where
+
+import Universum
 import Discord.Interactions
 
 string :: OptionValue

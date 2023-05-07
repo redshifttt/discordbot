@@ -1,9 +1,10 @@
-import           Control.Monad (when, void)
-import           Data.Text (isPrefixOf, toLower)
+module Main where
+
+import           Universum
+import           Data.Text (toLower)
 import qualified Data.Text.IO as TIO
 import           System.Environment (getEnv)
 import           Data.String.Conversions (cs)
-import           Control.Monad.IO.Class
 
 import           Discord
 import           Discord.Types
@@ -43,4 +44,4 @@ fromBot :: Message -> Bool
 fromBot = userIsBot . messageAuthor
 
 isPing :: Message -> Bool
-isPing = ("ping" `isPrefixOf`) . toLower . messageContent
+isPing = ("ping" `isPrefixOf`) . cs . toLower . messageContent

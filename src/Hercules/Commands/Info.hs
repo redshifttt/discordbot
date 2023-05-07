@@ -3,6 +3,7 @@
 
 module Hercules.Commands.Info (cmdInfo) where
 
+import           Universum
 import           Hercules.Types
 import           Discord.Interactions
 import           Discord
@@ -10,11 +11,10 @@ import qualified Discord.Requests as R
 import Discord.Types
 import Data.List (singleton)
 import Data.Maybe
-import Data.String.Conversions (cs)
-import Data.Text (Text)
 import Hercules.Errors
 import Hercules.Interactions
 import Hercules.CommandParameters.Types
+import qualified Data.List as L
 
 cmdInfo :: Command
 cmdInfo = Command {
@@ -32,9 +32,6 @@ cmdInfo = Command {
 
 handleInfo :: Interaction -> DiscordHandler ()
 handleInfo int = do
-  let cshow :: Show a => a -> Text
-      cshow = cs . show
-
   case interactionGuildId int of
     Nothing -> respond_ int $ interactionResponseBasic "failed to get guild ID"
     Just gldId -> do
@@ -47,7 +44,7 @@ handleInfo int = do
               simpleCounter name valuesF = Just EmbedField {
                 embedFieldName = name,
                 embedFieldInline = Just False,
-                embedFieldValue = cshow $ length $ valuesF guild
+                embedFieldValue = show $ L.length $ valuesF guild
               }
             in Just $ singleton def {
               createEmbedAuthorName = "Guild Info",
@@ -63,14 +60,14 @@ handleInfo int = do
 
                     memberCountRegular = length $ filter memberIsRegular members
 
-                  in cshow memberCount <> " (" <> cshow memberCountRegular <> " users, " <> cshow (memberCount - memberCountRegular) <> " bots)"
+                  in show memberCount <> " (" <> show memberCountRegular <> " users, " <> show (memberCount - memberCountRegular) <> " bots)"
                 },
                 simpleCounter "Emojis" guildEmojis,
                 simpleCounter "Roles" guildRoles,
                 simpleCounter "Stickers" guildStickers
               ],
-              createEmbedDescription = cshow $ guildFeatures guild,
-              createEmbedFooterText = cshow gldId,
-              createEmbedThumbnail = guildIcon guild >>= \icon -> Just $ CreateEmbedImageUrl $ "https://cdn.discordapp.com/icons/" <> cshow gldId <> "/" <> icon <> ".png"
+              createEmbedDescription = show $ guildFeatures guild,
+              createEmbedFooterText = show gldId,
+              createEmbedThumbnail = guildIcon guild >>= \icon -> Just $ CreateEmbedImageUrl $ "https://cdn.discordapp.com/icons/" <> show gldId <> "/" <> icon <> ".png"
             }
           }

@@ -1,6 +1,6 @@
 module Hercules.Types where
 
-import Data.Text
+import Universum
 import Discord.Interactions
 import Discord
 

@@ -1,7 +1,7 @@
 module Hercules.Errors where
 
+import Universum
 import Data.List (singleton)
-import Control.Monad
 
 import Discord
 import Discord.Interactions

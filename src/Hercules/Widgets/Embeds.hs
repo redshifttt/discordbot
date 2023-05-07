@@ -1,17 +1,14 @@
 module Hercules.Widgets.Embeds where
 
-import Data.Text
-import Data.String.Conversions (cs)
+import Universum
 import Discord
 import Discord.Types
 
 errorEmbed :: RestCallErrorCode -> CreateEmbed
-errorEmbed (RestCallErrorCode errCode errTitle errBody) = let
-  cshow :: Show a => a -> Text
-  cshow = cs . show
-  in def {
+errorEmbed (RestCallErrorCode errCode errTitle errBody) = 
+  def {
     createEmbedAuthorName = "REST Call Error",
-    createEmbedTitle = "HTTP " <> cshow errCode <> " " <> errTitle,
+    createEmbedTitle = "HTTP " <> show errCode <> " " <> errTitle,
     createEmbedDescription = errBody,
     createEmbedColor = Just DiscordColorRed
   }

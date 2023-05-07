@@ -29,8 +29,10 @@ executable hercules
         string-conversions,
         text,
         transformers,
+        universum,
         unliftio
     hs-source-dirs:   src
     default-language: Haskell2010
     default-extensions:
         OverloadedStrings
+        NoImplicitPrelude
