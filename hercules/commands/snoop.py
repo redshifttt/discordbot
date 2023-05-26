@@ -49,12 +49,9 @@ class Snoop(commands.Cog):
         for m in messages:
             log += m
 
-        if not len(log) >= 4000:
-            with open(f"Hercules messages for {channel.name}.txt", "w") as f:
-                f.write(log)
-            await ctx.reply(file=discord.File(f"Hercules messages for {channel.name}.txt"))
-        else:
-            await ctx.reply(log)
+        with open(f"Hercules messages for {channel.name}.txt", "w") as f:
+            f.write(log)
+        await ctx.reply(file=discord.File(f"Hercules messages for {channel.name}.txt"))
 
 async def setup(bot):
     log.in_log("INFO", "command_setup", "command snoop has been loaded")
