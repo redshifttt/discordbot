@@ -78,7 +78,7 @@ class Info(commands.Cog):
 
         return embed
 
-    @commands.group(aliases=["i"])
+    @commands.group()
     async def info(self, ctx):
         if ctx.invoked_subcommand:
             return
@@ -93,7 +93,7 @@ class Info(commands.Cog):
 
         await ctx.reply(embed=guild_data)
 
-    @guild.command(aliases=["q"])
+    @guild.command()
     async def query(self, ctx, arg):
         guild = self.bot.get_guild(int(arg))
 

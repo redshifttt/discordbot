@@ -19,7 +19,6 @@ class Snoop(commands.Cog):
     @snoop.group()
     async def guild(self, ctx, guild_arg):
         guild = self.bot.get_guild(int(guild_arg))
-        channels = guild.channels
         categories = guild.categories
         channels_list = ""
 
@@ -41,17 +40,23 @@ class Snoop(commands.Cog):
         messages = []
         async for message in channel.history(limit=500):
             author = message.author
-            content = message.content
-            created_at = discord.utils.format_dt(message.created_at, style="R")
-            messages.append(f"{created_at} **{author}**: {content}\n")
+            content = message.clean_content
+            created_at = message.created_at.strftime("%b %d %Y %H:%M:%S")
+            try:
+                top_role = author.top_role
+            except:
+                top_role = "none"
+
+            messages.append(f"[{created_at}] [{top_role}] {author}: {content}\n")
 
         messages.reverse()
+
         for m in messages:
             log += m
 
-        with open(f"Hercules messages for {channel.name}.txt", "w") as f:
+        with open(f"Hercules {channel.name} log.txt", "w") as f:
             f.write(log)
-        await ctx.reply(file=discord.File(f"Hercules messages for {channel.name}.txt"))
+        await ctx.reply(file=discord.File(f"Hercules {channel.name} log.txt"))
 
 async def setup(bot):
     log.in_log("INFO", "command_setup", "command snoop has been loaded")
