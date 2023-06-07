@@ -1,7 +1,7 @@
 {
     description = "Hercules Discord Bot";
 
-    inputs.nixpkgs.url = "github:NixOS/nixpkgs";
+    inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
 
     outputs = { self, nixpkgs }@inputs:
         let
@@ -19,6 +19,7 @@
                 ];
                 shellHook = ''
                     echo "devshell for the Hercules Discord bot"
+                    export PS1="(devshell) $PS1"
                     '';
             };
     };
