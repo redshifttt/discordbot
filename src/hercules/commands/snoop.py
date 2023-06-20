@@ -3,6 +3,7 @@ from discord.ext import commands
 import hercules.helper.log as log
 import hercules.helper.utils as herculesutils
 import time
+import datetime
 
 class Snoop(commands.Cog):
     def __init__(self, bot):
@@ -38,25 +39,83 @@ class Snoop(commands.Cog):
 
         log = ""
         messages = []
+
+        log += f"Last 500 messages in {str(channel.guild)} -> #{str(channel)}\n"
+        log += "Times are in UTC.\n\n"
+
+        last_message_creation = datetime.datetime(1970, 1, 1)
+
         async for message in channel.history(limit=500):
+            messages.append(message)
+
+        messages = reversed(messages)
+
+        for message in messages:
             author = message.author
+
             content = message.clean_content
-            created_at = message.created_at.strftime("%b %d %Y %H:%M:%S")
-            try:
-                top_role = author.top_role
-            except:
-                top_role = "none"
 
-            messages.append(f"[{created_at}] [{top_role}] {author}: {content}\n")
+            if not content:
+                content = message
 
-        messages.reverse()
+            created_at = message.created_at
+            created_at_fancy = created_at.strftime("%H:%M:%S")
 
-        for m in messages:
-            log += m
+            if last_message_creation.date() < created_at.date():
+                log += f"--- {created_at.strftime('%d %B %Y')} ---\n"
 
-        with open(f"Hercules {channel.name} log.txt", "w") as f:
-            f.write(log)
-        await ctx.reply(file=discord.File(f"Hercules {channel.name} log.txt"))
+            log += f"[{created_at_fancy}]"
+
+            if author.bot:
+                log += " 🤖 "
+            else:
+                log += " "
+
+            log += f"{author.name}: {content}\n"
+
+            last_message_creation = created_at
+
+            with open(f"Hercules snoop for {channel.name}.txt", "w") as f:
+                f.write(log)
+
+        await ctx.reply(file=discord.File(f"Hercules snoop for {channel.name}.txt"))
+
+    @snoop.group()
+    async def activity(self, ctx, channel_arg):
+        channel = self.bot.get_channel(int(channel_arg))
+
+        log = ""
+        messages = []
+        dates = {}
+
+        log += f"Last week of activity in {str(channel.guild)} -> #{str(channel)}\n"
+
+        today = datetime.datetime.today()
+        week_ago_td = datetime.timedelta(days=7)
+        date_week_ago = today - week_ago_td
+        print(date_week_ago)
+
+        async with self.bot.get_channel(ctx.channel.id).typing():
+            async for message in channel.history(after=date_week_ago, oldest_first=True, limit=None):
+                messages.append(message)
+
+            log += f"Total: {len(messages)} posts\n"
+
+            for message in messages:
+                print(message)
+                posted_on = message.created_at.strftime("%a %d %B %Y")
+                if posted_on not in dates:
+                    dates[posted_on] = 1
+                else:
+                    dates[posted_on] += 1
+
+            for k, v in dates.items():
+                log += f"{k}: {v} posts\n"
+
+            ts = time.time()
+            with open(f"Hercules activity for {channel.name} {round(ts)}.txt", "w") as f:
+                f.write(log)
+            await ctx.reply(file=discord.File(f"Hercules activity for {channel.name} {round(ts)}.txt"))
 
 async def setup(bot):
     log.in_log("INFO", "command_setup", "command snoop has been loaded")
