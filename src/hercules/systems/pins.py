@@ -11,8 +11,11 @@ class PinsSystem(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_guild_channel_pins_update(self, channel, lastpin):
-        guild_id = channel.guild.id
+    async def on_message(self, message):
+        if not message.type.value == 6:
+            return
+
+        guild_id = message.guild.id
 
         db_connection, db_cursor = db.connect_to_db("data.db")
 
@@ -38,43 +41,36 @@ class PinsSystem(commands.Cog):
                 await general_channel.send(":x: No webhook URL set for the Pins System")
                 return
 
-            pinned_messages = [m async for m in channel.history(limit=100) if m.pinned]
+            if message.reference.cached_message:
+                pinned_message = message.reference.cached_message
+            else:
+                channel_id = message.reference.channel_id
+                message_id = message.reference.message_id
 
-            for message in pinned_messages:
-                user = message.author
-                user_name = f"{user.name}#{user.discriminator}"
-                pfp = user.avatar.url
-                message_content = message.content + "\n"
-                message_id = message.id
-                message_attachments = []
-                for att in message.attachments:
-                    file = await att.to_file()
-                    message_attachments.append(file)
+                channel = await self.bot.fetch_channel(channel_id)
+                pinned_message = await channel.fetch_message(message_id)
 
-                pin_in_db = db_cursor.execute("SELECT pinned_message_id FROM pins WHERE guild_id = ?", (guild_id,)).fetchall()
-                found_pins = [pin["pinned_message_id"] for pin in pin_in_db]
+            user = pinned_message.author
+            user_name = user.name
+            pfp = user.avatar.url
 
-                if message_id in found_pins:
-                    await message.unpin()
-                    return
+            message_content = pinned_message.content
+            message_id = pinned_message.id
 
-                async with aiohttp.ClientSession() as session:
-                    webhook = discord.Webhook.from_url(pins_webhook_url, session=session)
-                    if len(message_attachments) == 1:
-                        await webhook.send(message_content, username=user_name, avatar_url=pfp, file=message_attachments[0])
-                    else:
-                        await webhook.send(message_content, username=user_name, avatar_url=pfp, files=message_attachments)
+            message_attachments = []
+            for att in pinned_message.attachments:
+                file = await att.to_file()
+                message_attachments.append(file)
 
-                db_cursor.execute("INSERT INTO pins (guild_id, pinned_message_id) VALUES (?, ?)", (guild_id, message_id,))
+            async with aiohttp.ClientSession() as session:
+                webhook = discord.Webhook.from_url(pins_webhook_url, session=session)
+                if len(message_attachments) == 1:
+                    await webhook.send(message_content, username=user_name, avatar_url=pfp, file=message_attachments[0])
+                else:
+                    await webhook.send(message_content, username=user_name, avatar_url=pfp, files=message_attachments)
 
-                db_connection.commit()
+            await pinned_message.unpin()
 
-                await message.unpin()
-
-                # we only want the last pinned message to be put in pins_channel
-                return
-
-        db_connection.close()
 
 async def setup(bot):
     log.in_log("INFO", "listener_setup", "Pins System has been loaded")
