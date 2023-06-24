@@ -15,6 +15,15 @@ string = OptionValueString {
   optionValueRequired = True
 }
 
+user :: OptionValue
+user = OptionValueMentionable {
+  optionValueName = "user",
+  optionValueDescription = "A user",
+  optionValueLocalizedName = Nothing,
+  optionValueLocalizedDescription = Nothing,
+  optionValueRequired = True
+}
+
 subcommand :: OptionSubcommand
 subcommand = OptionSubcommand {
   optionSubcommandName = "subcommand",
