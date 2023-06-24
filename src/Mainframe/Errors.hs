@@ -1,4 +1,4 @@
-module Hercules.Errors where
+module Mainframe.Errors where
 
 import Universum
 import Data.List (singleton)
@@ -7,7 +7,7 @@ import Discord
 import Discord.Interactions
 import qualified Discord.Requests as R
 
-import Hercules.Widgets.Embeds
+import Mainframe.Widgets.Embeds
 
 withInteractiveError :: Interaction -> DiscordHandler (Either RestCallErrorCode a) -> DiscordHandler (Either RestCallErrorCode a)
 withInteractiveError int action = do

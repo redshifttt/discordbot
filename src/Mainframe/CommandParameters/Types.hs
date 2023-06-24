@@ -1,4 +1,4 @@
-module Hercules.CommandParameters.Types where
+module Mainframe.CommandParameters.Types where
 
 import Universum
 import Discord.Interactions

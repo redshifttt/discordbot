@@ -1,18 +1,18 @@
 {-# OPTIONS_GHC -Wno-incomplete-record-updates #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
 
-module Hercules.Commands.Info (cmdInfo) where
+module Mainframe.Commands.Info (cmdInfo) where
 
 import           Universum
-import           Hercules.Types
+import           Mainframe.Types
 import           Discord.Interactions
 import           Discord
 import qualified Discord.Requests as R
 import Discord.Types
 import Data.List (singleton)
 import Data.Maybe
-import Hercules.Interactions
-import qualified Hercules.CommandParameters.Types as Param
+import Mainframe.Interactions
+import qualified Mainframe.CommandParameters.Types as Param
 import qualified Data.List as L
 
 cmdInfo :: Command

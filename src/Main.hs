@@ -10,12 +10,12 @@ import           Discord
 import           Discord.Types
 import qualified Discord.Requests as R
 
-import           Hercules.Commands
+import           Mainframe.Commands
 
 -- | Replies "pong" to every message that starts with "ping"
 main :: IO ()
 main = do
-    token <- getEnv "HERCULES_BOT_TOKEN"
+    token <- getEnv "MAINFRAME_BOT_TOKEN"
     userFacingError <- runDiscord $ def
              { discordToken = cs token
              , discordOnEvent = eventHandler

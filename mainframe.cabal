@@ -1,5 +1,5 @@
 cabal-version:   3.0
-name:            hercules
+name:            mainframe
 version:         0.0.0.0
 license:         GPL-2.0-only
 author:          redshift, Max Headroom
@@ -9,18 +9,18 @@ build-type:      Simple
 common warnings
     ghc-options: -Wall
 
-executable hercules
+executable mainframe
     import:           warnings
     main-is:          Main.hs
     other-modules:
-        Hercules.Commands
-        Hercules.Commands.Info
-        Hercules.Commands.Pick
-        Hercules.CommandParameters.Types
-        Hercules.Errors
-        Hercules.Interactions
-        Hercules.Types
-        Hercules.Widgets.Embeds
+        Mainframe.Commands
+        Mainframe.Commands.Info
+        Mainframe.Commands.Pick
+        Mainframe.CommandParameters.Types
+        Mainframe.Errors
+        Mainframe.Interactions
+        Mainframe.Types
+        Mainframe.Widgets.Embeds
     build-depends:
         base,
         containers,

@@ -1,4 +1,4 @@
-module Hercules.Commands where
+module Mainframe.Commands where
 
 import           Universum
 import qualified Data.Map as M
@@ -8,15 +8,15 @@ import           Discord
 import           Discord.Types
 import qualified Discord.Requests as R
 
-import           Hercules.Types
-import qualified Hercules.Commands.Info
-import qualified Hercules.Commands.Pick
-import           Hercules.Interactions
+import           Mainframe.Types
+import qualified Mainframe.Commands.Info
+import qualified Mainframe.Commands.Pick
+import           Mainframe.Interactions
 
 allCommands :: M.Map Text Command
 allCommands = M.fromList $ map (\cmd -> (commandName cmd, cmd)) [
-    Hercules.Commands.Info.cmdInfo,
-    Hercules.Commands.Pick.cmdPick
+    Mainframe.Commands.Info.cmdInfo,
+    Mainframe.Commands.Pick.cmdPick
   ]
 
 registerCommands :: PartialApplication -> DiscordHandler ()

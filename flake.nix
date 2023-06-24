@@ -31,12 +31,12 @@
           devShell.enable = false;
         };
         packages = rec {
-          inherit (finalPackages) hercules;
-          default = hercules;
+          inherit (finalPackages) mainframe;
+          default = mainframe;
         };
         devenv.shells.default = let
           rawShell = finalPackages.shellFor {
-            packages = lib.const [ finalPackages.hercules ];
+            packages = lib.const [ finalPackages.mainframe ];
             nativeBuildInputs = [
               pkgs.cabal-install
               pkgs.haskell-language-server
@@ -47,7 +47,7 @@
           env.DEVENV_ROOT = lib.mkForce "/tmp";
           packages = rawShell.nativeBuildInputs;
           processes = {
-            hercules.exec = "cabal run";
+            mainframe.exec = "cabal run";
           };
           scripts = {
             docs.exec = ''

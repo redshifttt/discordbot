@@ -1,16 +1,16 @@
 {-# OPTIONS_GHC -Wno-incomplete-record-updates #-}
 
-module Hercules.Commands.Pick (cmdPick) where
+module Mainframe.Commands.Pick (cmdPick) where
 
 import           Universum
 import           Universum.Unsafe ((!!))
-import           Hercules.Types
+import           Mainframe.Types
 import           Discord.Interactions
 import           Discord
 import           System.Random
 import Data.Maybe
-import Hercules.CommandParameters.Types
-import Hercules.Interactions
+import Mainframe.CommandParameters.Types
+import Mainframe.Interactions
 
 cmdPick :: Command
 cmdPick = Command {

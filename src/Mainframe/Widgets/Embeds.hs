@@ -1,4 +1,4 @@
-module Hercules.Widgets.Embeds where
+module Mainframe.Widgets.Embeds where
 
 import Universum
 import Discord

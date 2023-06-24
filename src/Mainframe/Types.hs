@@ -1,4 +1,4 @@
-module Hercules.Types where
+module Mainframe.Types where
 
 import Universum
 import Discord.Interactions

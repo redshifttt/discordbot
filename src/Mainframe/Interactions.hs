@@ -1,4 +1,4 @@
-module Hercules.Interactions where
+module Mainframe.Interactions where
 
 import Universum
 
@@ -6,7 +6,7 @@ import Discord
 import Discord.Interactions
 import qualified Discord.Requests as R
 
-import Hercules.Errors
+import Mainframe.Errors
 
 respond :: Interaction -> InteractionResponse -> DiscordHandler (Either RestCallErrorCode ())
 respond int resp = let
