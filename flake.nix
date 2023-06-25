@@ -7,7 +7,7 @@
     };
     haskell-flake.url = "github:srid/haskell-flake";
     devenv = {
-      url = "github:cachix/devenv";
+      url = "github:privatevoid-net/devenv/env-runtime";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         nix.follows = "blank";
@@ -44,7 +44,6 @@
             withHoogle = true;
           };
         in {
-          env.DEVENV_ROOT = lib.mkForce "/tmp";
           packages = rawShell.nativeBuildInputs;
           processes = {
             mainframe.exec = "cabal run";
