@@ -87,35 +87,43 @@ For performance reasons only the **last 100 messages** in a channel can be pinne
 
 `./settings`
 
-: Running the command on its own will display the settings panel for your server. This has various **Systems** and **Settings** (variables) in it. `./settings` has **2** sub-commands: modify and remove.
+#### Description
+
+Running the command on its own will display the settings panel for your server. This has various **Systems** and **Settings** (variables) in it. `./settings` has **2** sub-commands: modify and remove.
 
 `./settings modify <variable> <value>`
 
-: This command will let you edit the contents of a `<variable>` in the settings panel. You can find what the `<variable>` is because the name of it will be inside a mini code block.
+#### Description
 
-: For example in the **Settings** section at the bottom: "`general_channel`: 1089375254687786839"; this is what one of the settings could look like. The part with the underscores "`_`" is the `<variable>` in this case.
+This command will let you edit the contents of a `<variable>` in the settings panel. You can find what the `<variable>` is because the name of it will be inside a mini code block.
 
-: For **Systems** you will see that they have on or off beside them. You can use the same commands with the values of `on` or `off` to be able to change them. Example: "**Join/Leave System** `join_leave_system`: Off" can be toggled like so: `./settings modify join_leave_system on`.
+For example in the **Settings** section at the bottom: "`general_channel`: 1089375254687786839"; this is what one of the settings could look like. The part with the underscores "`_`" is the `<variable>` in this case.
 
-: **In the case of** `pins_blacklist` the values inside of it will be modified by just adding on whatever `<value>` is to whatever is already there. This can be completely removed with the next command.
+For **Systems** you will see that they have on or off beside them. You can use the same commands with the values of `on` or `off` to be able to change them. Example: "**Join/Leave System** `join_leave_system`: Off" can be toggled like so: `./settings modify join_leave_system on`.
+
+**In the case of** `pins_blacklist` the values inside of it will be modified by just adding on whatever `<value>` is to whatever is already there. This can be completely removed with the next command.
 
 `./settings remove <variable>`
 
-: This command will take the `<variable>` and **completely remove whatever is inside of it**. This is useful if you just want to completely start over from something. `pins_blacklist` also requires using it as it is just a list which keeps getting added on to.
+#### Description
+
+This command will take the `<variable>` and **completely remove whatever is inside of it**. This is useful if you just want to completely start over from something. `pins_blacklist` also requires using it as it is just a list which keeps getting added on to.
 
 ### Search
 
 `./search <search term>`
 
-: Do a web search for `<search term>`. The search API used is [Private Void Search](https://search.privatevoid.net) which is routed through an anonymous VPN (Mullvad) plus [no logs are kept](https://git.privatevoid.net/private-void/depot/-/blob/master/hosts/VEGAS/services/searxng/default.nix#L56). This will return the first **5** results found. It may take a second due to the anonymization factors used.
+#### Description
 
-: **Example:**
+Do a web search for `<search term>`. The search API used is [Private Void Search](https://search.privatevoid.net) which is routed through an anonymous VPN (Mullvad) plus [no logs are kept](https://git.privatevoid.net/private-void/depot/-/blob/master/hosts/VEGAS/services/searxng/default.nix#L56). This will return the first **5** results found. It may take a second due to the anonymization factors used.
 
-: `./search hercules discord bot`
+#### Example
 
-: **Aliases:**
+`./search hercules discord bot`
 
-: `./s`
+#### Aliases
+
+`./s`
 
 ### Info
 
@@ -133,15 +141,21 @@ Types of information displayed:
 
 `./info guild`
 
-: Display server information for the server the command is ran in.
+##### Description
+
+Display server information for the server the command is ran in.
 
 `./info guild index`
 
-: List all of the servers that the bot is in by creation-date.
+##### Description
+
+List all of the servers that the bot is in by creation-date.
 
 `./info guild query <id>`
 
-: Get information on a guild that the bot is in by the guilds ID.
+##### Description
+
+Get information on a guild that the bot is in by the guilds ID.
 
 #### User
 
@@ -158,38 +172,48 @@ Types of information displayed:
 
 `./info user`
 
-: Gets information about yourself.
+##### Description
+
+Gets information about yourself.
 
 `./info user @usermention`
 `./info user <id>`
 
-: Gets information about a user via mention or ID.
+##### Description
+
+Gets information about a user via mention or ID.
 
 ### Avatar
 
 `./avatar`
 
-: Gets your own profile picture.
+#### Description
 
-: **Aliases:**
+Gets your own profile picture.
 
-: `./avi`, `./pfp`
+#### Aliases
+
+`./avi`, `./pfp`
 
 `./avatar @usermention`
 
-: Gets the profile picture of `@usermention`.
+#### Description
+
+Gets the profile picture of `@usermention`.
 
 ### Ask
 
 `./ask <value> or <value>`
 `./ask <value> or <value> or <value> or ...`
 
-: Let the bot pick between values. This is random. Note "or" is needed between whatever values you use.
+#### Description
 
-: **Example**
+Let the bot pick between values. This is random. Note "or" is needed between whatever values you use.
 
-: `./ask 1 or 2`
+#### Example
 
-: `./ask cat or dog or mouse or hamster`
+`./ask 1 or 2`
 
-: `./ask red car or blue car`
+`./ask cat or dog or mouse or hamster`
+
+`./ask red car or blue car`
