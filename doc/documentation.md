@@ -91,6 +91,8 @@ For performance reasons only the **last 100 messages** in a channel can be pinne
 
 Running the command on its own will display the settings panel for your server. This has various **Systems** and **Settings** (variables) in it. `./settings` has **2** sub-commands: modify and remove.
 
+---
+
 `./settings modify <variable> <value>`
 
 #### Description
@@ -102,6 +104,8 @@ For example in the **Settings** section at the bottom: "`general_channel`: 10893
 For **Systems** you will see that they have on or off beside them. You can use the same commands with the values of `on` or `off` to be able to change them. Example: "**Join/Leave System** `join_leave_system`: Off" can be toggled like so: `./settings modify join_leave_system on`.
 
 **In the case of** `pins_blacklist` the values inside of it will be modified by just adding on whatever `<value>` is to whatever is already there. This can be completely removed with the next command.
+
+---
 
 `./settings remove <variable>`
 
@@ -145,11 +149,15 @@ Types of information displayed:
 
 Display server information for the server the command is ran in.
 
+---
+
 `./info guild index`
 
 ##### Description
 
 List all of the servers that the bot is in by creation-date.
+
+---
 
 `./info guild query <id>`
 
@@ -176,6 +184,8 @@ Types of information displayed:
 
 Gets information about yourself.
 
+---
+
 `./info user @usermention`
 `./info user <id>`
 
@@ -194,6 +204,8 @@ Gets your own profile picture.
 #### Aliases
 
 `./avi`, `./pfp`
+
+---
 
 `./avatar @usermention`
 
