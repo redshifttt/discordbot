@@ -44,8 +44,8 @@ class Settings(commands.Cog):
                 systems += "**Join/Leave System** `join_leave_system`: :white_check_mark: On\n"
                 settings += "__**Join/Leave System**__\n"
                 settings += f"`traffic_channel`: {traffic_channel}\n"
-                settings += f"- `join_message`: {join_message}\n"
-                settings += f"- `leave_message`: {leave_message}\n"
+                settings += f"`join_message`: {join_message}\n"
+                settings += f"`leave_message`: {leave_message}\n"
             case _:
                 systems += "**Join/Leave System** `join_leave_system`: :x: Off\n"
 
@@ -58,7 +58,7 @@ class Settings(commands.Cog):
                 systems += "**Verification System** `verification_system`: :white_check_mark: On\n"
                 settings += "__**Verification System**__\n"
                 settings += f"`verification_channel`: {verification_channel}\n"
-                settings += f"- `verification_message`: {verification_message}\n"
+                settings += f"`verification_message`: {verification_message}\n"
             case _:
                 systems += "**Verification System** `verification_system`: :x: Off\n"
 
