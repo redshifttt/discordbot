@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import sqlite3
-import hercules.helper.log as log
 import hercules.helper.herculesdb as db
 
 class Settings(commands.Cog):
@@ -224,5 +223,4 @@ class Settings(commands.Cog):
         db_connection.close()
 
 async def setup(bot):
-    log.in_log("INFO", "command_setup", "command settings has been loaded")
     await bot.add_cog(Settings(bot))

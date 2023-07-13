@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import requests
 import json
-import hercules.helper.log as log
 
 class Search(commands.Cog):
     def __init__(self, bot):
@@ -36,5 +35,4 @@ class Search(commands.Cog):
             await ctx.reply(embed=embed)
 
 async def setup(bot):
-    log.in_log("INFO", "command_setup", "command search has been loaded")
     await bot.add_cog(Search(bot))

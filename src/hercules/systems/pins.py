@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import aiohttp
 import sqlite3
-import hercules.helper.log as log
 import hercules.helper.herculesdb as db
 import datetime as dt
 
@@ -77,5 +76,4 @@ class PinsSystem(commands.Cog):
         db_connection.close()
 
 async def setup(bot):
-    log.in_log("INFO", "listener_setup", "Pins System has been loaded")
     await bot.add_cog(PinsSystem(bot))

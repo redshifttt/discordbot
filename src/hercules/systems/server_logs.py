@@ -3,7 +3,6 @@ from discord.ext import commands
 import humanize
 import datetime as dt
 import sqlite3
-import hercules.helper.log as log
 import hercules.helper.herculesdb as db
 
 class ServerLogs(commands.Cog):
@@ -285,5 +284,4 @@ class ServerLogs(commands.Cog):
                 await general_channel.send(":warning: **System Message**: The Logs System has been triggered by an event but there is no `logs_channel` set.")
 
 async def setup(bot):
-    log.in_log("INFO", "listener_setup", "Logs System has been loaded")
     await bot.add_cog(ServerLogs(bot))

@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import random
-import hercules.helper.log as log
 
 class Ask(commands.Cog):
     def __init__(self, bot):
@@ -21,5 +20,4 @@ class Ask(commands.Cog):
         await ctx.reply(fortune)
 
 async def setup(bot):
-    log.in_log("INFO", "command_setup", "command ask has been loaded")
     await bot.add_cog(Ask(bot))

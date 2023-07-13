@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import datetime as dt
-import hercules.helper.log as log
 import hercules.helper.utils as herculesutils
 
 class Info(commands.Cog):
@@ -183,5 +182,4 @@ class Info(commands.Cog):
         await ctx.reply(embed=user_data)
 
 async def setup(bot):
-    log.in_log("INFO", "command_setup", "command info has been loaded")
     await bot.add_cog(Info(bot))

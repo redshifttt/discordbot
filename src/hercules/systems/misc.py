@@ -3,7 +3,6 @@ from discord.ext import commands
 import aiohttp
 import datetime as dt
 import sqlite3
-import hercules.helper.log as log
 import hercules.helper.herculesdb as db
 
 class MiscListeners(commands.Cog):
@@ -30,5 +29,4 @@ class MiscListeners(commands.Cog):
             await message.reply("shut up")
 
 async def setup(bot):
-    log.in_log("INFO", "listener_setup", "misc listeners has been loaded")
     await bot.add_cog(MiscListeners(bot))

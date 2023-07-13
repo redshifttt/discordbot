@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import requests
 import json
-import hercules.helper.log as log
 
 class Image(commands.Cog):
     def __init__(self, bot):
@@ -39,5 +38,4 @@ class Image(commands.Cog):
             await message.edit(content=None, embed=embed)
 
 async def setup(bot):
-    log.in_log("INFO", "command_setup", "command search has been loaded")
     await bot.add_cog(Image(bot))

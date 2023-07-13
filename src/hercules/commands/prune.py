@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import random
-import hercules.helper.log as log
 
 class Prune(commands.Cog):
     def __init__(self, bot):
@@ -26,5 +25,4 @@ class Prune(commands.Cog):
         await channel.delete_messages(messages_to_delete)
 
 async def setup(bot):
-    log.in_log("INFO", "command_setup", "command prune has been loaded")
     await bot.add_cog(Prune(bot))

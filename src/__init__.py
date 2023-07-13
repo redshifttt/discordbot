@@ -4,7 +4,6 @@ import sqlite3
 import time
 import discord
 from discord.ext import commands
-import hercules.helper.log as log
 import hercules.helper.herculesdb as db
 import inspect
 
@@ -21,7 +20,6 @@ os.environ['TZ'] = 'UTC'
 @bot.event
 async def on_ready():
     bot_start_load_time = time.time()
-    log.in_log("INFO", "on_ready", f"Logged in as {bot.user}")
 
     for file in os.listdir("hercules/commands"):
         if "pycache" in file:
@@ -69,7 +67,6 @@ async def on_ready():
         guild_id_in_db = db_cursor.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,)).fetchone()
 
         if guild_id_in_db is None:
-            log.in_log("INFO", "guild_db_init", f"initializing {guild_name} ({guild_id}) in DB...")
             db_cursor.execute("INSERT INTO servers (guild_id) VALUES (?)", (guild_id,))
             db_connection.commit()
 
@@ -83,13 +80,11 @@ async def on_ready():
 
     if has_pins_db is None:
         db_cursor.execute("""CREATE TABLE pins( guild_id, pinned_message_id, pinned_user_id, pin_content, pin_attachments)""")
-        log.in_log("INFO", "pins_db_init", "creating the pins table in DB...")
         db_connection.commit()
 
     db_connection.close()
 
     bot_finish_load_time = time.time()
-    log.in_log("INFO", "benchmark", f"Finished bot startup in {bot_finish_load_time - bot_start_load_time:.3f} seconds")
 
 with open("config.json", "r", encoding="utf-8") as config:
     config = json.load(config)

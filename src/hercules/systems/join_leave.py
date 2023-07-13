@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import sqlite3
-import hercules.helper.log as log
 import hercules.helper.herculesdb as db
 
 class JoinLeave(commands.Cog):
@@ -88,5 +87,4 @@ class JoinLeave(commands.Cog):
         db_connection.close()
 
 async def setup(bot):
-    log.in_log("INFO", "listener_setup", "Join/Leave System has been loaded")
     await bot.add_cog(JoinLeave(bot))
