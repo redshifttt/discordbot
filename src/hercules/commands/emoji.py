@@ -9,6 +9,9 @@ class Emoji(commands.Cog):
 
     @commands.command()
     async def emoji(self, ctx, *args):
+        if not ctx.author.guild_permissions.manage_emojis:
+            return
+
         if not len(args) == 2:
             await ctx.reply(":x: Please provide a name for the emoji and a link. Example: `./emoji <name> <link>`.")
             return
