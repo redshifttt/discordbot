@@ -23,5 +23,22 @@ class InviteNuker(commands.Cog):
                     await message.delete()
                     await message.author.timeout(dt.timedelta(minutes=1), reason=f"Advertising in #{message.channel.name}")
 
+    @commands.Cog.listener(name='on_message_edit')
+    async def edit_invite_nuker(self, before, after):
+        message = after
+
+        db_connection, db_cursor = db.connect_to_db("data.db")
+        row = db_cursor.execute("SELECT * FROM servers WHERE guild_id = ?", (message.guild.id,)).fetchone()
+        invite_nuker_system = row["invite_nuker_system"]
+        db_connection.close()
+
+        triggers = ["discord.gg", "discord.com/invite"]
+
+        if invite_nuker_system == 1:
+            for t in triggers:
+                if t in message.content and not message.author.guild_permissions.administrator:
+                    await message.delete()
+                    await message.author.timeout(dt.timedelta(minutes=1), reason=f"Advertising in #{message.channel.name}")
+
 async def setup(bot):
     await bot.add_cog(InviteNuker(bot))
