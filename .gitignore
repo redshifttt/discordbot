@@ -3,3 +3,4 @@ config.json
 hupload
 data.db
 bot.log
+*direnv*
