@@ -15,8 +15,8 @@
             python311Packages.discordpy
             python311Packages.requests
             python311Packages.aiohttp
-            python311Packages.humanize
             python311Packages.python-lsp-server
+            python311Packages.tinydb
           ];
         };
     };
