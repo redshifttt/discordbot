@@ -1,11 +1,9 @@
 import os
 import json
-import sqlite3
 import time
 import discord
 from discord.ext import commands
-import hercules.helper.herculesdb as db
-import inspect
+from tinydb import TinyDB, Query, where
 
 os.environ['TZ'] = 'UTC'
 
@@ -27,49 +25,30 @@ async def on_ready():
         await bot.load_extension("hercules.systems." + file[0:-3])
         print(f"loaded systems {file[0:-3]}")
 
-    db_connection, db_cursor = db.connect_to_db("data.db")
+    db = TinyDB("db.json")
 
-    print("checking for servers db")
-    has_servers_db = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='servers'").fetchone()
-    if has_servers_db is None:
-        db_cursor.execute("""CREATE TABLE servers(
-            guild_id,
-            traffic_channel,
-            verification_channel,
-            general_channel,
-            logs_channel,
-            join_message,
-            leave_message,
-            verification_message,
-            join_leave_system,
-            invite_nuker_system,
-            verification_system,
-            logs_system,
-            pins_system
-            pins_channel,
-            pins_blacklist
-        )
-        """)
-        db_connection.commit()
-        print("created servers db")
-
-    has_pins_db = db_cursor.execute("SELECT name FROM sqlite_master WHERE name='pins'").fetchone()
-    if has_pins_db is None:
-        db_cursor.execute("CREATE TABLE pins(guild_id, pinned_message_id, pinned_user_id, pin_content, pin_attachments)")
-        db_connection.commit()
-        print("created pins db")
-
-    guilds_bot_is_in = bot.guilds
-    for guild in guilds_bot_is_in:
+    for guild in bot.guilds:
         guild_id = guild.id
 
-        guild_id_in_db = db_cursor.execute("SELECT guild_id FROM servers WHERE guild_id=?", (guild_id,)).fetchone()
-        if guild_id_in_db is None:
-            db_cursor.execute("INSERT INTO servers (guild_id) VALUES (?)", (guild_id,))
-            db_connection.commit()
+        guild_id_in_db = db.search(where("server_id") == guild_id)
+        if not guild_id_in_db:
+            db.insert({
+                "server_id": guild_id,
+                "general_channel": None,
+                "traffic_channel": None,
+                "join_message": None,
+                "leave_message": None,
+                "verification_system": None,
+                "verification_channel": None,
+                "verification_message": None,
+                "join_leave_system": None,
+                "invite_nuker_system": None,
+                "logs_system": None,
+                "logs_channel": None,
+                "pins_system": None,
+                "pins_channel": None,
+            })
             print(f"created db entry in servers for {guild.name}")
-
-    db_connection.close()
 
     print("bot ready")
 

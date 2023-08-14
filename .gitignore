@@ -1,6 +1,5 @@
 *pycache*
+*direnv*
 config.json
 hupload
-data.db
-bot.log
-*direnv*
+db.json
