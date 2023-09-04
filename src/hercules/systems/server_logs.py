@@ -11,7 +11,7 @@ class ServerLogs(commands.Cog):
         guild_id = member.guild.id
 
         db = TinyDB("db.json")
-        row = db.search(where("server_id") == guild.id)[0]
+        row = db.search(where("server_id") == guild_id)[0]
 
         logs_system = row["logs_system"]
         logs_channel = row["logs_channel"]
@@ -51,7 +51,7 @@ class ServerLogs(commands.Cog):
         guild_id = member.guild.id
 
         db = TinyDB("db.json")
-        row = db.search(where("server_id") == guild.id)[0]
+        row = db.search(where("server_id") == guild_id)[0]
 
         logs_system = row["logs_system"]
         logs_channel = row["logs_channel"]
@@ -88,7 +88,7 @@ class ServerLogs(commands.Cog):
         guild_id = member.guild.id
 
         db = TinyDB("db.json")
-        row = db.search(where("server_id") == guild.id)[0]
+        row = db.search(where("server_id") == guild_id)[0]
 
         logs_system = row["logs_system"]
         logs_channel = row["logs_channel"]
@@ -167,7 +167,7 @@ class ServerLogs(commands.Cog):
         member = user
 
         db = TinyDB("db.json")
-        row = db.search(where("server_id") == guild.id)[0]
+        row = db.search(where("server_id") == guild_id)[0]
 
         logs_system = row["logs_system"]
         logs_channel = row["logs_channel"]
@@ -204,7 +204,7 @@ class ServerLogs(commands.Cog):
         guild_id = message.guild.id
 
         db = TinyDB("db.json")
-        row = db.search(where("server_id") == guild.id)[0]
+        row = db.search(where("server_id") == guild_id)[0]
 
         logs_system = row["logs_system"]
         logs_channel = row["logs_channel"]

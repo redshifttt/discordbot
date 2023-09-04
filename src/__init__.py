@@ -13,6 +13,7 @@ bot = commands.Bot(command_prefix="./", intents=intents, help_command=None, allo
 @bot.event
 async def on_ready():
     print(f"logged in as {str(bot.user)}")
+
     for file in os.listdir("hercules/commands"):
         if "pycache" in file:
             continue

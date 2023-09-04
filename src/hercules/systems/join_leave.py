@@ -20,7 +20,7 @@ class JoinLeave(commands.Cog):
         guild_id = member.guild.id
 
         db = TinyDB("db.json")
-        guild_row = db.search(where("server_id") == guild.id)[0]
+        guild_row = db.search(where("server_id") == guild_id)[0]
 
         join_leave_system = guild_row["join_leave_system"]
         traffic_channel = guild_row["traffic_channel"]
@@ -50,7 +50,7 @@ class JoinLeave(commands.Cog):
         guild_id = member.guild.id
 
         db = TinyDB("db.json")
-        guild_row = db.search(where("server_id") == guild.id)[0]
+        guild_row = db.search(where("server_id") == guild_id)[0]
 
         join_leave_system = guild_row["join_leave_system"]
         traffic_channel = guild_row["traffic_channel"]
