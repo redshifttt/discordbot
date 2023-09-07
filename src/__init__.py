@@ -4,6 +4,8 @@ import time
 import discord
 from discord.ext import commands
 from tinydb import TinyDB, Query, where
+import sys
+from prettytable import PrettyTable
 
 os.environ['TZ'] = 'UTC'
 
@@ -52,6 +54,25 @@ async def on_ready():
             print(f"created db entry in servers for {guild.name}")
 
     print("bot ready")
+
+    while True:
+        line = sys.stdin.readline()
+        if line.startswith(":c"):
+            sys.stdout.write("Welcome to Hercules Command Mode!\n")
+            while True:
+                stdin = input(">>> ")
+                match stdin:
+                    case "guilds":
+                        x = PrettyTable()
+                        x.field_names = ["ID", "Guild name", "Member count", "Channel count", "Role count"]
+                        for g in bot.guilds:
+                            x.add_row([g.id, g.name, g.member_count, len(g.channels), len(g.roles)])
+                        print(x)
+                    case "q":
+                        print("exiting command mode back to cli...")
+                        break
+                    case _:
+                        pass
 
 with open("config.json", "r", encoding="utf-8") as config:
     config = json.load(config)
