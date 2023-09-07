@@ -17,6 +17,7 @@
             python311Packages.aiohttp
             python311Packages.python-lsp-server
             python311Packages.tinydb
+            python311Packages.prettytable
           ];
         };
     };
